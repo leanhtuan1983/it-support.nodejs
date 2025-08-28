@@ -1,0 +1,104 @@
+<div class="container-fluid">
+  <div class="row mt-2 ms-1 me-1">
+    <ul class="breadcrumb rounded">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Users</a></li>
+    </ul>
+  </div>
+  <div class="row mt-2 mb-2 d-flex justify-content-between">
+    <div class="col-md-9">
+      <div class="card">
+        <div class="card-header">User index</div>
+        <div class="card-body">
+          <table id="userListTable" class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Role</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="userListTableBody"></tbody>
+            <tfoot>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Department</th>
+                <th>Role</th>
+                <th>Action</th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-header">Add new User</div>
+        <div class="card-body"></div>
+      </div>
+    </div>
+    <div class="d-none col-md-3">
+      <div class="card">
+        <div class="card-header">Edit User</div>
+        <div class="card-body"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.3.3/js/dataTables.bootstrap5.js"></script>
+<script>
+  new DataTable("#userListTable");
+</script>
+<script>
+  async function loadUserList() {
+    try {
+      const res = await fetch("/users/fetchUserData");
+      const data = await res.json();
+      if (data.success) {
+        const tbody = document.getElementById("userListTableBody");
+        tbody.innerHTML = "";
+        data.data.forEach((user) => {
+          const row = `
+              <tr>
+                <td>${user.id}</td>
+                <td>${user.name}</td>
+                <td>${user.email}</td>
+                <td>${user.department_name}</td>
+                <td>${user.role}</td>
+                <td>
+                    <a class ="btn btn-info" href="/users/info/${user.id}"><i class="bi bi-eye"></i></a>
+                    <a class="btn btn-warning" href="/users/edit/${user.id}"><i class="bi bi-pencil-square"></i></a> 
+                    <a class="btn btn-danger" href="#" onclick="deleteUser(${user.id})"><i class="bi bi-trash"></i></a>
+                </td>
+              </tr>`;
+          tbody.innerHTML += row;
+        });
+      } else {
+        alert(data.message || "Không thể tải danh sách");
+      }
+    } catch (err) {
+      console.error("Lỗi fetch:", err);
+    }
+  }
+
+  async function deleteUser(id) {
+    if (!confirm("Bạn có chắc muốn xóa?")) return;
+    try {
+      const res = await fetch(`/management/categories/delete/${id}`);
+      const data = await res.json();
+      alert(data.message);
+      loadCategories();
+    } catch (err) {
+      console.error("Lỗi xóa:", err);
+    }
+  }
+
+  window.onload = loadUserList;
+</script>
