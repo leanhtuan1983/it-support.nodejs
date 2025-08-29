@@ -7,6 +7,7 @@ require("dotenv").config();
 const authRouter = require("./routes/authRouter");
 const dashboardRouter = require("./routes/dashboardRouter");
 const userRouter = require("./routes/userRouter");
+const departmentRouter = require("./routes/departmentRouter");
 
 const app = express();
 
@@ -37,5 +38,6 @@ app.use(
 app.use("/", authRouter);
 app.use("/dashboard", dashboardRouter);
 app.use("/users", userRouter);
+app.use("/departments", departmentRouter);
 
 module.exports = app;

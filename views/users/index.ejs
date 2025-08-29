@@ -36,26 +36,82 @@
         </div>
       </div>
     </div>
-    <div class="col-md-3">
+    <div class="col-md-3" id="addNewUser">
       <div class="card">
-        <div class="card-header">Add new User</div>
-        <div class="card-body"></div>
+        <div class="card-header bg-primary-subtle">Add new User</div>
+        <div class="card-body">
+          <div class="form-group mb-3">
+            <label for="name">Username</label>
+            <input type="text" class="form-control" name="name" id="name" />
+          </div>
+          <div class="form-group mb-3">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              name="password"
+              id="password"
+            />
+          </div>
+          <div class="form-group mb-3">
+            <label for="email">Email</label>
+            <input type="email" class="form-control" name="email" id="email" />
+          </div>
+          <div class="form-group mb-3">
+            <label for="departmentList">Department</label>
+            <select
+              class="form-select"
+              aria-label="Default select example"
+              id="departmentList"
+            >
+              <option selected>Open this select menu</option>
+              <option value=""></option>
+            </select>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="d-none col-md-3">
+    <div class="d-none col-md-3" id="editUser">
       <div class="card">
-        <div class="card-header">Edit User</div>
-        <div class="card-body"></div>
+        <div class="card-header bg-warning-subtle">Edit User</div>
+        <div class="card-body">
+          <div class="form-group mb-3">
+            <label for="name">Username</label>
+            <input type="text" class="form-control" name="name" id="name" />
+          </div>
+          <div class="form-group mb-3">
+            <label for="name">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              name="password"
+              id="password"
+            />
+          </div>
+          <div class="form-group mb-3">
+            <label for="name">Email</label>
+            <input type="email" class="form-control" name="email" id="email" />
+          </div>
+          <select class="form-select" aria-label="Default select example">
+            <option selected>Open this select menu</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+          </select>
+        </div>
       </div>
     </div>
   </div>
 </div>
+<!-- JS DataTable -->
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.3.3/js/dataTables.bootstrap5.js"></script>
 <script>
   new DataTable("#userListTable");
 </script>
+
+<!-- JS Load danh sách users/ xóa user -->
 <script>
   async function loadUserList() {
     try {
@@ -74,7 +130,7 @@
                 <td>${user.role}</td>
                 <td>
                     <a class ="btn btn-info" href="/users/info/${user.id}"><i class="bi bi-eye"></i></a>
-                    <a class="btn btn-warning" href="/users/edit/${user.id}"><i class="bi bi-pencil-square"></i></a> 
+                    <a href="#" class="btn btn-warning" onclick="switchToEdit(${user.id})"><i class="bi bi-pencil-square"></i></a>
                     <a class="btn btn-danger" href="#" onclick="deleteUser(${user.id})"><i class="bi bi-trash"></i></a>
                 </td>
               </tr>`;
@@ -101,4 +157,27 @@
   }
 
   window.onload = loadUserList;
+</script>
+
+<!-- JS Load danh sách departments cho select -->
+<script>
+  async function loadDepartmentSelect() {
+    const resDept = await fetch("/departments/fetchDeptData");
+    const deptList = await resDept.json();
+  }
+</script>
+
+<!-- JS Hiển thị form edit user -->
+<script>
+  function switchToEdit(userId) {
+    // Ẩn form add
+    document.getElementById("addNewUser").classList.add("d-none");
+
+    // Hiện form edit
+    document.getElementById("editUser").classList.remove("d-none");
+
+    // (tuỳ chọn) nạp dữ liệu userId vào form edit
+    console.log("Đang edit user id:", userId);
+    // ở đây anh có thể fetch dữ liệu user theo id rồi fill vào form edit
+  }
 </script>
