@@ -40,59 +40,117 @@
       <div class="card">
         <div class="card-header bg-primary-subtle">Add new User</div>
         <div class="card-body">
-          <div class="form-group mb-3">
-            <label for="name">Username</label>
-            <input type="text" class="form-control" name="name" id="name" />
-          </div>
-          <div class="form-group mb-3">
-            <label for="password">Password</label>
-            <input
-              type="password"
-              class="form-control"
-              name="password"
-              id="password"
-            />
-          </div>
-          <div class="form-group mb-3">
-            <label for="email">Email</label>
-            <input type="email" class="form-control" name="email" id="email" />
-          </div>
-          <div class="form-group mb-3">
-            <label for="departmentList">Department</label>
-            <select
-              class="form-select"
-              aria-label="Default select example"
-              id="departmentList"
-            >
-              <option selected>Open this select menu</option>
-              <option value=""></option>
-            </select>
-          </div>
+          <form id="addUser">
+            <div class="form-group mb-3">
+              <label for="name">Username</label>
+              <input type="text" class="form-control" name="name" id="name" />
+            </div>
+            <div class="form-group mb-3">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                name="password"
+                id="password"
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                name="email"
+                id="email"
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="departmentList">Department</label>
+              <select
+                class="form-select mt-2"
+                aria-label="Default select example"
+                id="departmentList"
+              >
+                <option selected>Open this select menu</option>
+                <option value=""></option>
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label class="mb-2">Role</label>
+              <div class="d-flex">
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="exampleRadios"
+                    id="exampleRadios1"
+                    value="admin"
+                    checked
+                  />
+                  <label class="form-check-label" for="exampleRadios1">
+                    Admin
+                  </label>
+                </div>
+                <div class="form-check ms-2">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="exampleRadios"
+                    id="exampleRadios2"
+                    value="user"
+                  />
+                  <label class="form-check-label" for="exampleRadios2">
+                    User
+                  </label>
+                </div>
+                <div class="form-check ms-2">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="exampleRadios"
+                    id="exampleRadios2"
+                    value="it_staff"
+                  />
+                  <label class="form-check-label" for="exampleRadios2">
+                    IT Staff
+                  </label>
+                </div>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
     </div>
     <div class="d-none col-md-3" id="editUser">
-      <div class="card">
+      <div class="card shadow">
         <div class="card-header bg-warning-subtle">Edit User</div>
         <div class="card-body">
           <div class="form-group mb-3">
-            <label for="name">Username</label>
-            <input type="text" class="form-control" name="name" id="name" />
+            <label for="editName">Username</label>
+            <input type="text" class="form-control" name="name" id="editName" />
           </div>
           <div class="form-group mb-3">
-            <label for="name">Password</label>
+            <label for="editPassword">Password</label>
             <input
               type="password"
               class="form-control"
               name="password"
-              id="password"
+              id="editPassword"
             />
           </div>
           <div class="form-group mb-3">
-            <label for="name">Email</label>
-            <input type="email" class="form-control" name="email" id="email" />
+            <label for="editEmail">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              name="email"
+              id="editEmail"
+            />
           </div>
-          <select class="form-select" aria-label="Default select example">
+          <select
+            class="form-select"
+            aria-label="Default select example"
+            id="editDepartment"
+          >
             <option selected>Open this select menu</option>
             <option value="1">One</option>
             <option value="2">Two</option>
@@ -159,12 +217,35 @@
   window.onload = loadUserList;
 </script>
 
-<!-- JS Load danh sách departments cho select -->
+<!-- JS Load danh sách departments cho add new user -->
 <script>
   async function loadDepartmentSelect() {
-    const resDept = await fetch("/departments/fetchDeptData");
-    const deptList = await resDept.json();
+    try {
+      const resDept = await fetch("/departments/fetchDeptData");
+      const deptListData = await resDept.json();
+
+      if (deptListData.success && Array.isArray(deptListData.data)) {
+        const select = document.getElementById("departmentList");
+        select.innerHTML = "";
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Chọn phòng ban";
+        select.appendChild(defaultOption);
+
+        deptListData.data.forEach((dept) => {
+          const opt = document.createElement("option");
+          opt.value = dept.id;
+          opt.textContent = dept.name;
+          select.appendChild(opt);
+        });
+      } else {
+        console.warn("Không có dữ liệu phòng ban:", deptListData);
+      }
+    } catch (err) {
+      console.error("Lỗi kết nối Cơ sở dữ liệu:", err);
+    }
   }
+  document.addEventListener("DOMContentLoaded", loadDepartmentSelect);
 </script>
 
 <!-- JS Hiển thị form edit user -->
