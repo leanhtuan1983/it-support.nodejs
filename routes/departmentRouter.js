@@ -5,4 +5,8 @@ const departmentController = require("../controllers/departmentController");
 
 router.get("/", departmentController.index);
 router.get("/fetchDeptData", departmentController.fetchDeptData);
+router.post("/addDept", departmentController.addDept);
+router.get("/getDept/:id", departmentController.getDeptById);
+router.put("/update/:id", departmentController.updateDept);
+
 module.exports = router;
