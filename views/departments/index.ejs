@@ -11,7 +11,7 @@
     <!-- Danh sách departments -->
     <div class="col-md-9">
       <div class="card">
-        <div class="card-header bg-info">User index</div>
+        <div class="card-header bg-info">Department index</div>
         <div class="card-body">
           <table id="departmentListTable" class="table table-striped">
             <thead>
@@ -145,33 +145,40 @@
       const res = await fetch("/departments/fetchDeptData");
       const data = await res.json();
       if (data.success) {
+        // Nếu DataTable đã tồn tại -> hủy trước khi render lại
+        if ($.fn.DataTable.isDataTable("#departmentListTable")) {
+          $("#departmentListTable").DataTable().destroy();
+        }
+
         const tbody = document.getElementById("departmentListTableBody");
         tbody.innerHTML = "";
         data.data.forEach((dept, index) => {
           const row = `
-            <tr>
-              <td>${index + 1}</td>
-              <td>${dept.name}</td>
-              <td>
-                <button type ="button" class="btn btn-info" onclick="showDeptInfo(${
-                  dept.id
-                })">
-                  <i class="bi bi-eye"></i>
-                </button>
-                <a href="#" class="btn btn-warning" onclick="switchToEdit(${
-                  dept.id
-                })">
-                  <i class="bi bi-pencil-square"></i>
-                </a>
-                <a class="btn btn-danger" href="#" onclick="deleteDept(${
-                  dept.id
-                })">
-                  <i class="bi bi-trash"></i>
-                </a>
-              </td>
-            </tr>`;
+          <tr>
+            <td>${index + 1}</td>
+            <td>${dept.name}</td>
+            <td>
+              <button type="button" class="btn btn-info" onclick="showDeptInfo(${
+                dept.id
+              })">
+                <i class="bi bi-eye"></i>
+              </button>
+              <a href="#" class="btn btn-warning" onclick="switchToEdit(${
+                dept.id
+              })">
+                <i class="bi bi-pencil-square"></i>
+              </a>
+              <a class="btn btn-danger" href="#" onclick="deleteDept(${
+                dept.id
+              })">
+                <i class="bi bi-trash"></i>
+              </a>
+            </td>
+          </tr>`;
           tbody.innerHTML += row;
         });
+
+        // Khởi tạo lại DataTable
         new DataTable("#departmentListTable");
       } else {
         showMessage("danger", data.message || "Không thể tải danh sách");
@@ -326,5 +333,3 @@
   // Gọi lần đầu
   window.onload = loadDepartmentList;
 </script>
-
-<script></>

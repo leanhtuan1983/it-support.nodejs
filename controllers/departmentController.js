@@ -12,6 +12,7 @@ exports.fetchDeptData = async (req, res) => {
     const results = await query("SELECT * FROM departments");
     res.json({ success: true, data: results });
   } catch (err) {
+    console.error("Lỗi fetch dữ liệu:", err);
     res.json({ success: false, message: "Lỗi kết nối server" });
   }
 };
@@ -29,7 +30,7 @@ exports.addDept = async (req, res) => {
     await query("INSERT INTO departments (name) VALUES (?)", [name.trim()]);
     res.json({ success: true, message: "Thêm department thành công" });
   } catch (err) {
-    console.error(err);
+    console.error("Lỗi thêm mới department:", err);
     res
       .status(500)
       .json({ success: false, message: "Có lỗi xảy ra khi thêm department" });
@@ -48,10 +49,10 @@ exports.getDeptById = async (req, res) => {
       });
     }
 
-    // Trả về đúng object 
+    // Trả về đúng object
     res.json({ success: true, data: rows[0] });
   } catch (err) {
-    console.error(err);
+    console.error("Lỗi truy vấn thông tin department:", err);
     res.status(500).json({ success: false, message: "Lỗi server" });
   }
 };
@@ -62,7 +63,7 @@ exports.updateDept = async (req, res) => {
     const { name } = req.body;
 
     if (!name || name.trim() === "") {
-      return res.res
+      return res
         .status(400)
         .json({ success: false, message: "Tên phòng ban không được để trống" });
     }
@@ -75,7 +76,10 @@ exports.updateDept = async (req, res) => {
       });
     }
 
-    await query("UPDATE departments SET name = ? WHERE id = ?", [name, id]);
+    await query("UPDATE departments SET name = ? WHERE id = ?", [
+      name.trim(),
+      id,
+    ]);
     res.json({ success: true, message: "Cập nhật thành công" });
   } catch (err) {
     console.error("Lối update:", err);
