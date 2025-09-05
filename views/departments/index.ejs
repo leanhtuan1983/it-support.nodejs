@@ -1,14 +1,17 @@
 <div class="container-fluid">
+  <!-- Hiển thị Breadcrumb -->
   <div class="row mt-2 ms-1 me-1">
     <ul class="breadcrumb rounded">
       <li><a href="#">Home</a></li>
       <li><a href="#">Departments</a></li>
     </ul>
   </div>
+  <!-- Nội dung chính -->
   <div class="row mt-2 mb-2 d-flex justify-content-between">
+    <!-- Danh sách departments -->
     <div class="col-md-9">
       <div class="card">
-        <div class="card-header">User index</div>
+        <div class="card-header bg-info">User index</div>
         <div class="card-body">
           <table id="departmentListTable" class="table table-striped">
             <thead>
@@ -30,11 +33,16 @@
         </div>
       </div>
     </div>
+    <!-- Form thêm mới/chỉnh sửa -->
     <div class="col-md-3">
+      <!-- Msg hiển thị chung -->
+      <div id="msg" class="mt-2 d-none"></div>
+
+      <!-- Form Add -->
       <div class="card" id="addDept">
-        <div class="card-header bg-primary-subtle">Add new Department</div>
+        <div class="card-header bg-info">Add new Department</div>
         <div class="card-body">
-          <form id="addDept">
+          <form id="addDeptForm">
             <div class="form-group mb-3">
               <label for="name">Name</label>
               <input type="text" class="form-control" name="name" id="name" />
@@ -45,13 +53,14 @@
               </button>
             </div>
           </form>
-          <div id="msg" class="mt-3"></div>
         </div>
       </div>
+
+      <!-- Form Edit -->
       <div class="card shadow d-none" id="editDept">
-        <div class="card-header bg-warning-subtle">Edit Department</div>
+        <div class="card-header bg-warning">Edit Department</div>
         <div class="card-body">
-          <form id="editDeptForm">
+          <form id="editDeptForm" data-id="">
             <div class="form-group mb-3">
               <label for="nameEdit">Name</label>
               <input
@@ -84,17 +93,53 @@
     </div>
   </div>
 </div>
+<!-- Modal info -->
+<div
+  class="modal fade"
+  id="infoModal"
+  tabindex="-1"
+  aria-labelledby="infoModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="infoModalLabel">Modal title</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">...</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- JS DataTable -->
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.3.3/js/dataTables.bootstrap5.js"></script>
-<script>
-  new DataTable("#departmentListTable");
-</script>
 
-<!-- JS Load danh sách departments/ xóa department -->
 <script>
+  // Hiển thị message chung
+  function showMessage(type, text) {
+    const msgDiv = document.getElementById("msg");
+    msgDiv.classList.remove("d-none");
+    msgDiv.innerHTML = `<div class="alert alert-${type}">${text}</div>`;
+    setTimeout(() => {
+      msgDiv.classList.add("d-none");
+      msgDiv.innerHTML = "";
+    }, 2000);
+  }
+
+  // Load danh sách departments
   async function loadDepartmentList() {
     try {
       const res = await fetch("/departments/fetchDeptData");
@@ -104,53 +149,48 @@
         tbody.innerHTML = "";
         data.data.forEach((dept, index) => {
           const row = `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${dept.name}</td>
-                    <td>
-                    <a class ="btn btn-info" href="/users/info/${
-                      dept.id
-                    }"><i class="bi bi-eye"></i></a>
-                    <a href="#" class="btn btn-warning" onclick="switchToEdit(${
-                      dept.id
-                    })"><i class="bi bi-pencil-square"></i></a>
-                    <a class="btn btn-danger" href="#" onclick="deleteUser(${
-                      dept.id
-                    })"><i class="bi bi-trash"></i></a> 
-                    </td>
-                </tr>`;
+            <tr>
+              <td>${index + 1}</td>
+              <td>${dept.name}</td>
+              <td>
+                <button type ="button" class="btn btn-info" onclick="showDeptInfo(${
+                  dept.id
+                })">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <a href="#" class="btn btn-warning" onclick="switchToEdit(${
+                  dept.id
+                })">
+                  <i class="bi bi-pencil-square"></i>
+                </a>
+                <a class="btn btn-danger" href="#" onclick="deleteDept(${
+                  dept.id
+                })">
+                  <i class="bi bi-trash"></i>
+                </a>
+              </td>
+            </tr>`;
           tbody.innerHTML += row;
         });
+        new DataTable("#departmentListTable");
       } else {
-        alert(data.message || "Không thể tải danh sách");
+        showMessage("danger", data.message || "Không thể tải danh sách");
       }
     } catch (err) {
       console.error("Lỗi fetch:", err);
+      showMessage("danger", "Lỗi server khi tải danh sách");
     }
   }
-  window.onload = loadDepartmentList;
-</script>
-<!-- JS thêm mới Department -->
-<script>
+
+  // Thêm Department
   document
-    .getElementById("addDept")
-    .addEventListener("submit", async function (e) {
+    .getElementById("addDeptForm")
+    .addEventListener("submit", async (e) => {
       e.preventDefault();
-
       const name = document.getElementById("name").value.trim();
-      const msg = document.getElementById("msg");
 
-      function showMessage(html) {
-        msg.innerHTML = html;
-        setTimeout(() => {
-          msg.innerHTML = "";
-        }, 3000);
-      }
       if (!name) {
-        showMessage(
-          `<div class = "alert alert-danger">Vui lòng nhập tên phong ban!</div>`
-        );
-        return;
+        return showMessage("danger", "Tên không được để trống");
       }
 
       try {
@@ -159,66 +199,132 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name }),
         });
-
         const data = await res.json();
 
         if (data.success) {
-          showMessage(
-            `<div class = "alert alert-success">Thêm thành công!</div>`
-          );
-          document.getElementById("name").value = "";
+          showMessage("success", data.message);
+          document.getElementById("addDeptForm").reset();
           loadDepartmentList();
         } else {
-          showMessage(
-            `<div class = "alert alert-warning">${
-              data.message || "Thêm thất bại"
-            }</div>`
-          );
+          showMessage("danger", data.message);
         }
       } catch (err) {
-        console.error("Lỗi thêm:", err);
-        showMessage(
-          `<div class = "alert alert-danger">Lỗi kết nối server</div>`
-        );
+        console.error("Lỗi add:", err);
+        showMessage("danger", "Lỗi server khi thêm phòng ban");
       }
     });
-</script>
 
-<!-- JS load form edit -->
-<script>
-  let currentDeptId = null;
-
+  // Chuyển sang form Edit
   async function switchToEdit(deptId) {
-    currentDeptId = deptId;
-    // Ẩn form add
     document.getElementById("addDept").classList.add("d-none");
-
-    // Hiện form edit
     document.getElementById("editDept").classList.remove("d-none");
+
+    document.getElementById("editDeptForm").setAttribute("data-id", deptId);
 
     try {
       const res = await fetch(`/departments/getDept/${deptId}`);
       const data = await res.json();
-
       if (data.success) {
         document.getElementById("nameEdit").value = data.data.name;
       } else {
-        alert(data.message || "Không load được dữ liệu");
+        showMessage("danger", data.message || "Không tìm thấy phòng ban");
       }
     } catch (err) {
-      console.error(err);
-      alert("Lỗi kết nối server");
+      console.error("Lỗi fetch dept:", err);
+      showMessage("danger", "Lỗi server khi lấy thông tin phòng ban");
     }
   }
-</script>
 
-<!-- JS Hủy edit -->
-<script>
+  // Update Department
+  document
+    .getElementById("editDeptForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const id = e.target.getAttribute("data-id");
+      const name = document.getElementById("nameEdit").value.trim();
+
+      if (!name) {
+        return showMessage("danger", "Tên không được để trống");
+      }
+
+      try {
+        const res = await fetch(`/departments/update/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name }),
+        });
+        const data = await res.json();
+
+        if (data.success) {
+          showMessage("success", data.message);
+          cancelEdit();
+          loadDepartmentList();
+        } else {
+          showMessage("danger", data.message);
+        }
+      } catch (err) {
+        console.error("Lỗi update:", err);
+        showMessage("danger", "Lỗi server khi cập nhật phòng ban");
+      }
+    });
+
+  // Cancel Edit
   function cancelEdit() {
-    // Ẩn form add
     document.getElementById("editDept").classList.add("d-none");
-
-    // Hiện form edit
     document.getElementById("addDept").classList.remove("d-none");
+    document.getElementById("editDeptForm").reset();
   }
+
+  // Xóa Department
+  async function deleteDept(id) {
+    if (!confirm("Bạn có chắc chắn muốn xóa phòng ban này?")) return;
+    try {
+      const res = await fetch(`/departments/delete/${id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.success) {
+        showMessage("success", data.message);
+        loadDepartmentList();
+      } else {
+        showMessage("danger", data.message);
+      }
+    } catch (err) {
+      console.error("Lỗi delete:", err);
+      showMessage("danger", "Lỗi server khi xóa phòng ban");
+    }
+  }
+  // Modal hiển thị thông tin department
+  async function showDeptInfo(id) {
+    try {
+      const res = await fetch(`/departments/getDept/${id}`);
+      const data = await res.json();
+
+      if (data.success) {
+        // Lấy phần tử modal
+        const modalLabel = document.getElementById("infoModalLabel");
+        const modalBody = document.querySelector("#infoModal .modal-body");
+
+        // Cập nhật nội dung
+        modalLabel.textContent = "Thông tin phòng ban";
+        modalBody.innerHTML = `
+          <p><strong>ID:</strong> ${data.data.id}</p>
+          <p><strong>Name:</strong> ${data.data.name}</p>
+        `;
+
+        // Hiển thị modal
+        const modal = new bootstrap.Modal(document.getElementById("infoModal"));
+        modal.show();
+      } else {
+        alert(data.message || "Không thể lấy thông tin phòng ban");
+      }
+    } catch (err) {
+      console.error("Lỗi fetch:", err);
+      alert("Lỗi server");
+    }
+  }
+  // Gọi lần đầu
+  window.onload = loadDepartmentList;
 </script>
+
+<script></>

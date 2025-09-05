@@ -48,7 +48,7 @@ exports.getDeptById = async (req, res) => {
       });
     }
 
-    // ✅ Trả về đúng object chứ không phải array
+    // Trả về đúng object 
     res.json({ success: true, data: rows[0] });
   } catch (err) {
     console.error(err);
@@ -69,12 +69,10 @@ exports.updateDept = async (req, res) => {
 
     const [check] = await query("SELECT * FROM departments WHERE id = ?", [id]);
     if (!check || check.length === 0) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Không tìm thấy phòng ban để cập nhật",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy phòng ban để cập nhật",
+      });
     }
 
     await query("UPDATE departments SET name = ? WHERE id = ?", [name, id]);
@@ -82,5 +80,23 @@ exports.updateDept = async (req, res) => {
   } catch (err) {
     console.error("Lối update:", err);
     res.status(500).json({ success: false, message: "Lỗi kết nối server" });
+  }
+};
+
+exports.delete = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const [check] = await query("SELECT * FROM departments WHERE id = ?", [id]);
+    if (!check || check.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy dữ liệu",
+      });
+    }
+    await query("DELETE FROM departments WHERE id = ?", [id]);
+    res.json({ success: true, message: "Xóa thành công!" });
+  } catch (err) {
+    console.error("Lỗi xóa dữ liệu", err);
+    res.status(500).json({ success: false, message: "Lỗi server" });
   }
 };
