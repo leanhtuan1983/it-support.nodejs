@@ -8,6 +8,7 @@ const authRouter = require("./routes/authRouter");
 const dashboardRouter = require("./routes/dashboardRouter");
 const userRouter = require("./routes/userRouter");
 const departmentRouter = require("./routes/departmentRouter");
+const computerRouter = require("./routes/computerRouter");
 
 const app = express();
 
@@ -39,5 +40,6 @@ app.use("/", authRouter);
 app.use("/dashboard", dashboardRouter);
 app.use("/users", userRouter);
 app.use("/departments", departmentRouter);
+app.use("/computers", computerRouter);
 
 module.exports = app;

@@ -104,7 +104,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="infoModalLabel">Modal title</h1>
+        <h1 class="modal-title fs-5" id="infoModalLabel">Thông tin Department</h1>
         <button
           type="button"
           class="btn-close"
@@ -136,7 +136,7 @@
     setTimeout(() => {
       msgDiv.classList.add("d-none");
       msgDiv.innerHTML = "";
-    }, 2000);
+    }, 3000);
   }
 
   // Load danh sách departments
@@ -223,7 +223,9 @@
 
   // Chuyển sang form Edit
   async function switchToEdit(deptId) {
+    // Hide addForm
     document.getElementById("addDept").classList.add("d-none");
+    // Show editForm
     document.getElementById("editDept").classList.remove("d-none");
 
     document.getElementById("editDeptForm").setAttribute("data-id", deptId);

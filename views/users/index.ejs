@@ -11,7 +11,7 @@
     <!-- Table index -->
     <div class="col-md-9">
       <div class="card">
-        <div class="card-header">User index</div>
+        <div class="card-header bg-info">User index</div>
         <div class="card-body">
           <table id="userListTable" class="table table-striped">
             <thead>
@@ -39,15 +39,16 @@
         </div>
       </div>
     </div>
-
+    <!-- Add/Edit form -->
     <div class="col-md-3">
-      <!-- Add/Edit form -->
+      <!-- Show message -->
       <div id="msg" class="mt-2 d-none"></div>
+
       <!-- Add form (show) -->
       <div class="card" id="addNewUser">
-        <div class="card-header bg-primary-subtle">Add new User</div>
+        <div class="card-header bg-info">Add new User</div>
         <div class="card-body">
-          <form id="addUser">
+          <form id="addUserForm">
             <div class="form-group mb-3">
               <label for="name">Username</label>
               <input type="text" class="form-control" name="name" id="name" />
@@ -81,48 +82,57 @@
                 <option value=""></option>
               </select>
             </div>
-            <div class="form-group mb-3 border-bottom">
-              <label class="mb-2">Role</label>
-              <div class="d-flex mb-2">
+            <div class="d-flex border rounded justify-content-between mb-3">
+              <div class="form-group ms-4 mt-2 me-4 mb-3">
+                <label class="mb-2">Role</label>
                 <div class="form-check">
                   <input
                     class="form-check-input"
                     type="radio"
-                    name="exampleRadios"
-                    id="exampleRadios1"
+                    name="roleRadios"
+                    id="admin"
                     value="admin"
+                  />
+                  <label class="form-check-label" for="admin"> Admin </label>
+                </div>
+                <div class="form-check">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="roleRadios"
+                    id="user"
+                    value="user"
                     checked
                   />
-                  <label class="form-check-label" for="exampleRadios1">
-                    Admin
-                  </label>
+                  <label class="form-check-label" for="user"> User </label>
                 </div>
-                <div class="form-check ms-2">
+                <div class="form-check">
                   <input
                     class="form-check-input"
                     type="radio"
-                    name="exampleRadios"
-                    id="exampleRadios2"
-                    value="user"
-                  />
-                  <label class="form-check-label" for="exampleRadios2">
-                    User
-                  </label>
-                </div>
-                <div class="form-check ms-2">
-                  <input
-                    class="form-check-input"
-                    type="radio"
-                    name="exampleRadios"
-                    id="exampleRadios2"
+                    name="roleRadios"
+                    id="it_staff"
                     value="it_staff"
                   />
-                  <label class="form-check-label" for="exampleRadios2">
+                  <label class="form-check-label" for="it_staff">
                     IT Staff
                   </label>
                 </div>
               </div>
+              <div class="form-group ms-4 mt-2 me-4">
+                <label class="mb-2" for="status">Active</label>
+                <div class="form-check form-switch mb-2">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="status"
+                    checked
+                  />
+                </div>
+              </div>
             </div>
+
             <div class="d-flex justify-content-end">
               <button type="submit" class="btn btn-outline-primary" id="btnAdd">
                 Xác nhận
@@ -133,143 +143,241 @@
       </div>
       <!-- Edit form -->
       <div class="card shadow d-none" id="editUser">
-        <div class="card-header bg-warning-subtle">Edit User</div>
+        <div class="card-header bg-warning">Edit User</div>
         <div class="card-body">
-          <div class="form-group mb-3">
-            <label for="nameEdit">Username</label>
-            <input
-              type="text"
-              class="form-control"
-              name="nameEdit"
-              id="nameEdit"
-            />
-          </div>
-          <div class="form-group mb-3">
-            <label for="passwordEdit">Password</label>
-            <input
-              type="password"
-              class="form-control"
-              name="passwordEdit"
-              id="passwordEdit"
-            />
-          </div>
-          <div class="form-group mb-3">
-            <label for="emailEdit">Email</label>
-            <input type="email" class="form-control" name="emailEdit" id="emailEdit" />
-          </div>
-          <div class="form-group mb-3">
-            <label for="departmentListEdit">Department</label>
-            <select
-              class="form-select mt-2"
-              aria-label="Default select example"
-              id="departmentListEdit"
-            >
-              <option selected>Open this select menu</option>
-              <option value=""></option>
-            </select>
-          </div>
-          <div class="form-group mb-3 border-bottom">
-            <label class="mb-2">Role</label>
-            <div class="d-flex mb-2">
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  name="exampleRadios"
-                  id="exampleRadios1"
-                  value="admin"
-                  checked
-                />
-                <label class="form-check-label" for="exampleRadios1">
-                  Admin
-                </label>
+          <form id="editUserForm">
+            <div class="form-group mb-3">
+              <label for="nameEdit">Username</label>
+              <input
+                type="text"
+                class="form-control"
+                name="nameEdit"
+                id="nameEdit"
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="passwordEdit">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                name="passwordEdit"
+                id="passwordEdit"
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="emailEdit">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                name="emailEdit"
+                id="emailEdit"
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="departmentListEdit">Department</label>
+              <select
+                class="form-select mt-2"
+                aria-label="Default select example"
+                id="departmentListEdit"
+              >
+                <option selected>Open this select menu</option>
+                <option value=""></option>
+              </select>
+            </div>
+            <div class="d-flex border rounded justify-content-between mb-3">
+              <div class="form-group ms-4 mt-2 me-4 mb-3">
+                <div class="form-group mb-3">
+                  <label class="mb-2">Role</label>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="exampleRadios"
+                      id="exampleRadios1"
+                      value="admin"
+                      checked
+                    />
+                    <label class="form-check-label" for="exampleRadios1">
+                      Admin
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="exampleRadios"
+                      id="exampleRadios2"
+                      value="user"
+                    />
+                    <label class="form-check-label" for="exampleRadios2">
+                      User
+                    </label>
+                  </div>
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="exampleRadios"
+                      id="exampleRadios2"
+                      value="it_staff"
+                    />
+                    <label class="form-check-label" for="exampleRadios2">
+                      IT Staff
+                    </label>
+                  </div>
+                </div>
               </div>
-              <div class="form-check ms-2">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  name="exampleRadios"
-                  id="exampleRadios2"
-                  value="user"
-                />
-                <label class="form-check-label" for="exampleRadios2">
-                  User
-                </label>
-              </div>
-              <div class="form-check ms-2">
-                <input
-                  class="form-check-input"
-                  type="radio"
-                  name="exampleRadios"
-                  id="exampleRadios2"
-                  value="it_staff"
-                />
-                <label class="form-check-label" for="exampleRadios2">
-                  IT Staff
-                </label>
+              <div class="form-group ms-4 mt-2 me-4">
+                <label class="mb-2" for="status">Active</label>
+                <div class="form-check form-switch mb-2">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    id="status"
+                    checked
+                  />
+                </div>
               </div>
             </div>
-          </div>
-          <div class="d-flex justify-content-end">
-            <button type="submit" class="btn btn-outline-primary" id="btnAdd">
-              Xác nhận
-            </button>
-          </div>
+            <div class="d-flex justify-content-between">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                onclick="cancelEdit()"
+                id="btnReturn"
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                class="btn btn-outline-warning"
+                id="btnUpdate"
+              >
+                Cập nhật
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Modal info -->
+<div
+  class="modal fade"
+  id="infoModal"
+  tabindex="-1"
+  aria-labelledby="infoModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="infoModalLabel">Thông tin user</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">...</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- JS DataTable -->
 <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
 <script src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.3.3/js/dataTables.bootstrap5.js"></script>
-<script>
-  new DataTable("#userListTable");
-</script>
 
 <!-- JS Load danh sách users/ xóa user -->
+
 <script>
+  // Message chung
+  function showMessage(type, text) {
+    const msDiv = document.getElementById("msg");
+    msDiv.classList.remove("d-none");
+    msDiv.innerHTML = `<div class="alert alert-${type}">${text}</div>`;
+    setTimeout(() => {
+      msDiv.classList.add("d-none");
+      msDiv.innerHTML = "";
+    }, 3000);
+  }
+</script>
+
+<script>
+  // Load danh sách users
   async function loadUserList() {
     try {
       const res = await fetch("/users/fetchUserData");
       const data = await res.json();
+      // Kiểm tra tồn tại datatable, nếu tồn tại -> hủy để render lại
       if (data.success) {
+        if ($.fn.DataTable.isDataTable("#userListTable")) {
+          $("#userListTable").DataTable().destroy();
+        }
+
+        // Đổ dữ liệu vào table
         const tbody = document.getElementById("userListTableBody");
         tbody.innerHTML = "";
-        data.data.forEach((user) => {
+        data.data.forEach((user, index) => {
           const row = `
               <tr>
-                <td>${user.id}</td>
+                <td>${index + 1}</td>
                 <td>${user.name}</td>
                 <td>${user.email}</td>
                 <td>${user.department_name}</td>
                 <td>${user.role}</td>
                 <td>
-                    <a class ="btn btn-info" href="/users/info/${user.id}"><i class="bi bi-eye"></i></a>
-                    <a href="#" class="btn btn-warning" onclick="switchToEdit(${user.id})"><i class="bi bi-pencil-square"></i></a>
-                    <a class="btn btn-danger" href="#" onclick="deleteUser(${user.id})"><i class="bi bi-trash"></i></a>
+                  <div class="d-md-flex gap-1">
+                    <button type = "button" class ="btn btn-info" onclick="showUserInfo(${
+                      user.id
+                    })"><i class="bi bi-eye"></i></button>
+                    <a href="#" class="btn btn-warning" onclick="switchToEdit(${
+                      user.id
+                    })"><i class="bi bi-pencil-square"></i></a>
+                    <a class="btn btn-danger" href="#" onclick="deleteUser(${
+                      user.id
+                    })"><i class="bi bi-trash"></i></a>
+                  </div>
                 </td>
               </tr>`;
           tbody.innerHTML += row;
         });
+        // Khởi tạo Datatable mới
+        new DataTable("#userListTable");
       } else {
-        alert(data.message || "Không thể tải danh sách");
+        showMessage("danger", data.message || "Không thể tải danh sách");
       }
     } catch (err) {
       console.error("Lỗi fetch:", err);
+      showMessage("danger", "Lỗi tải danh sách");
     }
   }
 
   async function deleteUser(id) {
-    if (!confirm("Bạn có chắc muốn xóa?")) return;
+    if (!confirm("Bạn có chắc muốn xóa user này?")) return;
     try {
-      const res = await fetch(`/management/categories/delete/${id}`);
+      const res = await fetch(`/users/delete/${id}`, { method: "DELETE" });
       const data = await res.json();
-      alert(data.message);
-      loadCategories();
+
+      if (data.success) {
+        showMessage("success", data.message);
+        loadUserList();
+      } else {
+        showMessage("danger", data.message);
+      }
     } catch (err) {
-      console.error("Lỗi xóa:", err);
+      console.error("Lỗi xóa user:", err);
+      showMessage("danger".data.message);
     }
   }
 
@@ -306,18 +414,163 @@
   }
   document.addEventListener("DOMContentLoaded", loadDepartmentSelect);
 </script>
-
-<!-- JS Hiển thị form edit user -->
+<!-- Add new user -->
 <script>
-  function switchToEdit(userId) {
-    // Ẩn form add
+  document
+    .getElementById("addUserForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const password = document.getElementById("password").value;
+      const email = document.getElementById("email").value;
+      const department_id = document.getElementById("departmentList").value;
+      const role = document.querySelector(
+        'input[name="roleRadios"]:checked'
+      ).value;
+
+      if (!name || !password || !email || !department_id) {
+        return showMessage("danger", "Không được bỏ trống thông tin");
+      }
+
+      try {
+        const res = await fetch("/users/addUser", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, password, email, role, department_id }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showMessage("success", data.message);
+          document.getElementById("addUserForm").reset();
+          loadUserList();
+        }
+      } catch (err) {
+        showMessage("Lỗi thêm user:", err);
+      }
+    });
+</script>
+
+<!-- Edit user -->
+<script>
+  async function switchToEdit(userId) {
     document.getElementById("addNewUser").classList.add("d-none");
-
-    // Hiện form edit
     document.getElementById("editUser").classList.remove("d-none");
+    document.getElementById("editUserForm").setAttribute("data-id", userId);
 
-    // (tuỳ chọn) nạp dữ liệu userId vào form edit
-    console.log("Đang edit user id:", userId);
-    // ở đây anh có thể fetch dữ liệu user theo id rồi fill vào form edit
+    try {
+      // Lấy chi tiết user
+      const res = await fetch(`/users/getUser/${userId}`);
+      const data = await res.json();
+
+      if (data.success) {
+        // Load danh sách departments
+        const deptRes = await fetch("/departments/fetchDeptData");
+        const deptData = await deptRes.json();
+
+        const deptSelect = document.getElementById("departmentListEdit");
+        deptSelect.innerHTML = ""; // clear options cũ
+
+        if (deptData.success) {
+          deptData.data.forEach((dept) => {
+            const option = document.createElement("option");
+            option.value = dept.id;
+            option.textContent = dept.name;
+
+            // chọn đúng department của user
+            if (dept.id === data.data.department_id) {
+              option.selected = true;
+            }
+
+            deptSelect.appendChild(option);
+          });
+        }
+
+        // Gán dữ liệu vào form
+        document.getElementById("nameEdit").value = data.data.name;
+        document.getElementById("passwordEdit").value = data.data.password;
+        document.getElementById("emailEdit").value = data.data.email;
+
+        // chọn đúng role
+        document
+          .querySelectorAll('#editUserForm input[name="exampleRadios"]')
+          .forEach((r) => {
+            r.checked = r.value === data.data.role;
+          });
+      }
+    } catch (err) {
+      console.error("Lỗi fetch dữ liệu user:", err);
+      showMessage("danger", "Xảy ra lỗi khi tải dữ liệu");
+    }
+  }
+
+  // Submit update
+  document
+    .getElementById("editUserForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const id = e.target.getAttribute("data-id");
+      const name = document.getElementById("nameEdit").value.trim();
+      const password = document.getElementById("passwordEdit").value;
+      const email = document.getElementById("emailEdit").value;
+      const department_id = document.getElementById("departmentListEdit").value;
+      const role = document.querySelector(
+        '#editUserForm input[name="exampleRadios"]:checked'
+      ).value;
+
+      try {
+        const res = await fetch(`/users/update/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, password, email, role, department_id }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showMessage("success", data.message);
+          cancelEdit();
+          loadUserList();
+        } else {
+          showMessage("danger", data.message);
+        }
+      } catch (err) {
+        console.error("Lỗi update user:", err);
+        showMessage("danger", data.message);
+      }
+    });
+
+  function cancelEdit() {
+    document.getElementById("editUser").classList.add("d-none");
+    document.getElementById("addNewUser").classList.remove("d-none");
+    document.getElementById("editUserForm").reset();
+  }
+</script>
+
+<script>
+  async function showUserInfo(id) {
+    try {
+      const res = await fetch(`/users/getUser/${id}`);
+      const data = await res.json();
+
+      if (data.success) {
+        const modalLabel = document.getElementById("infoModalLabel");
+        const modalBody = document.querySelector("#infoModal .modal-body");
+
+        modalLabel.textContent = "Thông tin user";
+        modalBody.innerHTML = `
+          <p><strong>ID:</strong> ${data.data.id}</p>
+          <p><strong>Username:</strong> ${data.data.name}</p>
+          <p><strong>Email:</strong> ${data.data.email}</p>
+          <p><strong>Role:</strong> ${data.data.role}</p>
+          <p><strong>Department:</strong> ${data.data.department_name}</p>
+        `;
+
+        const modal = new bootstrap.Modal(document.getElementById("infoModal"));
+        modal.show();
+      } else {
+        alert(data.message || "Không thể lấy thông tin user");
+      }
+    } catch (err) {
+      console.error("Lỗi truy vấn:", err);
+      alert("Lỗi truy vấn server");
+    }
   }
 </script>
