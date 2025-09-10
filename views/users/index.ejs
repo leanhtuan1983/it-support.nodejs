@@ -298,7 +298,8 @@
 <script src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.3.3/js/dataTables.bootstrap5.js"></script>
 
-<!-- JS Load danh sách users/ xóa user -->
+<!-- JS Load danh sách departments cho add new user -->
+<script src="/js/loadDepartmentList.js"></script>
 
 <script>
   // Message chung
@@ -384,36 +385,6 @@
   window.onload = loadUserList;
 </script>
 
-<!-- JS Load danh sách departments cho add new user -->
-<script>
-  async function loadDepartmentSelect() {
-    try {
-      const resDept = await fetch("/departments/fetchDeptData");
-      const deptListData = await resDept.json();
-
-      if (deptListData.success && Array.isArray(deptListData.data)) {
-        const select = document.getElementById("departmentList");
-        select.innerHTML = "";
-        const defaultOption = document.createElement("option");
-        defaultOption.value = "";
-        defaultOption.textContent = "Chọn phòng ban";
-        select.appendChild(defaultOption);
-
-        deptListData.data.forEach((dept) => {
-          const opt = document.createElement("option");
-          opt.value = dept.id;
-          opt.textContent = dept.name;
-          select.appendChild(opt);
-        });
-      } else {
-        console.warn("Không có dữ liệu phòng ban:", deptListData);
-      }
-    } catch (err) {
-      console.error("Lỗi kết nối Cơ sở dữ liệu:", err);
-    }
-  }
-  document.addEventListener("DOMContentLoaded", loadDepartmentSelect);
-</script>
 <!-- Add new user -->
 <script>
   document

@@ -1,0 +1,322 @@
+<div class="container-fluid">
+  <!-- Breadcrumb -->
+  <div class="row mt-2 ms-1 me-1">
+    <ul class="breadcrumb rounded">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Computer</a></li>
+    </ul>
+  </div>
+  <!-- Main content -->
+  <div class="row mt-2 mb-2 d-flex justify-content-between">
+    <!-- Table index -->
+    <div class="col-md-9">
+      <div class="card">
+        <div class="card-header bg-info">Computer index</div>
+        <div class="card-body">
+          <table id="computerListTable" class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Owner</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="computerListTableBody"></tbody>
+            <tfoot>
+              <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Owner</th>
+                <th>Action</th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+    <!-- Add/Edit form -->
+    <div class="col-md-3">
+      <!-- Show message -->
+      <div id="msg" class="mt-2 d-none"></div>
+
+      <!-- Add form (show) -->
+      <div class="card" id="addNewComputer">
+        <div class="card-header bg-info">Add new Computer</div>
+        <div class="card-body">
+          <form id="addComputerForm">
+            <div class="form-group mb-3">
+              <label for="name">Computer name</label>
+              <input type="text" class="form-control" name="name" id="name" />
+            </div>
+            <div class="form-group mb-3">
+              <label for="location">Location</label>
+              <input
+                type="text"
+                class="form-control"
+                name="location"
+                id="location"
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="departmentList">Department</label>
+              <select
+                class="form-select mt-2"
+                aria-label="Default select example"
+                id="departmentList"
+              >
+                <option value=""></option>
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="user_id">Owner</label>
+              <select
+                class="form-select mt-2"
+                aria-label="Default select example"
+                id="user_id"
+              >
+                <option value=""></option>
+              </select>
+            </div>
+
+            <div class="d-flex justify-content-end">
+              <button type="submit" class="btn btn-outline-primary" id="btnAdd">
+                Xác nhận
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      <!-- Edit form -->
+      <div class="card shadow d-none" id="editUser">
+        <div class="card-header bg-warning">Edit Computer</div>
+        <div class="card-body">
+          <form id="editComputerForm">
+            <div class="form-group mb-3">
+              <label for="nameEdit">Computer name</label>
+              <input
+                type="text"
+                class="form-control"
+                name="nameEdit"
+                id="nameEdit"
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="locationEdit">Location</label>
+              <input
+                type="text"
+                class="form-control"
+                name="locationEdit"
+                id="locationEdit"
+              />
+            </div>
+            <div class="form-group mb-3">
+              <label for="departmentListEdit">Department</label>
+              <select
+                class="form-select mt-2"
+                aria-label="Default select example"
+                id="departmentListEdit"
+              >
+                <option selected>Open this select menu</option>
+                <option value=""></option>
+              </select>
+            </div>
+            <div class="form-group mb-3">
+              <label for="userListEdit">Owner</label>
+              <select
+                class="form-select mt-2"
+                aria-label="Default select example"
+                id="userListEdit"
+              >
+                <option selected>Open this select menu</option>
+                <option value=""></option>
+              </select>
+            </div>
+
+            <div class="d-flex justify-content-between">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                onclick="cancelEdit()"
+                id="btnReturn"
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                class="btn btn-outline-warning"
+                id="btnUpdate"
+              >
+                Cập nhật
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal info -->
+<div
+  class="modal fade"
+  id="infoModal"
+  tabindex="-1"
+  aria-labelledby="infoModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="infoModalLabel">Thông tin Computer</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">...</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- JS DataTable -->
+<script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+<script src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
+<script src="https://cdn.datatables.net/2.3.3/js/dataTables.bootstrap5.js"></script>
+
+<!-- JS Load danh sách departments cho user -->
+<script src="/js/loadDepartmentList.js"></script>
+
+<script>
+  // Load danh sách computer
+  async function loadComputerList() {
+    try {
+      const res = await fetch("/computers/fetchComputerData");
+      const data = await res.json();
+      // Kiểm tra tồn tại datatable
+      if (data.success) {
+        if ($.fn.DataTable.isDataTable("#computerListTable")) {
+          $("#computerListTable").DataTable().destroy();
+        }
+        // Đổ dữ liệu vào table
+        const tbody = document.getElementById("computerListTableBody");
+        tbody.innerHTML = "";
+        data.data.forEach((com, index) => {
+          const row = `
+                  <tr>
+                      <td>${index + 1}</td>
+                      <td>${com.name}</td>
+                      <td>${com.location}</td>
+                      <td>${com.user_name}</td>
+                      <td>
+                        <div class="d-md-flex gap-1">
+                            <button type = "button" class ="btn btn-info" onclick="showUserInfo(${
+                              user.id
+                            })"><i class="bi bi-eye"></i></button>
+                            <a href="#" class="btn btn-warning" onclick="switchToEdit(${
+                              user.id
+                            })"><i class="bi bi-pencil-square"></i></a>
+                            <a class="btn btn-danger" href="#" onclick="deleteUser(${
+                              user.id
+                            })"><i class="bi bi-trash"></i></a>
+                        </div>
+                      </td>
+                  </tr>`;
+          tbody.innerHTML += row;
+        });
+        //   Khởi tạo datatable mới
+
+        new DataTable("#computerListTable");
+      } else {
+        showMessage("danger", data.message || "Có lỗi khi tải danh sách");
+      }
+    } catch (err) {
+      console.error("Lỗi fetch dữ liệu:", err);
+      showMessage("danger", "Lỗi tải danh sách");
+    }
+  }
+
+  //   Load danh sách user theo department
+  async function loadUserByDept(deptId) {
+    try {
+      const res = await fetch(`/computers/getUserByDept/${deptId}`);
+      const userListByDept = await res.json();
+
+      const selectUser = document.getElementById("user_id");
+      selectUser.innerHTML = "";
+
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "Chọn user";
+      selectUser.appendChild(defaultOption);
+
+      if (userListByDept.success && Array.isArray(userListByDept.data)) {
+        userListByDept.data.forEach((user) => {
+          const opt = document.createElement("option");
+          opt.value = user.id;
+          opt.textContent = user.name;
+          selectUser.appendChild(opt);
+        });
+      } else {
+        console.warn("Không có user nào thuộc phòng ban:", userListByDept);
+      }
+    } catch (err) {
+      console.error("Lỗi tải dữ liệu:", err);
+    }
+  }
+
+  // Bắt sự kiện khi chọn department -> load danh sách user của department được chọn
+
+  document
+    .getElementById("departmentList")
+    .addEventListener("change", function () {
+      const deptId = this.value;
+      if (deptId) {
+        loadUserByDept(deptId);
+      } else {
+        document.getElementById("user_id").innerHTML =
+          '<option value="">Chọn user</option>';
+      }
+    });
+
+  // Add computer
+
+  document
+    .getElementById("addComputerForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const location = document.getElementById("location").value;
+      const user_id = document.getElementById("user_id").value;
+
+      if (!name && !user_id) {
+        alert("Không được để trống name hoặc owner");
+      }
+      try {
+        const res = await fetch("/computers/addComputer", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, location, user_id }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert("Thêm thành công");
+          document.getElementById("addComputerForm").reset();
+          loadComputerList();
+        }
+      } catch (err) {
+        console.error("Có lỗi khi thêm mới dữ liệu:", err);
+      }
+    });
+
+  window.onload = loadComputerList;
+</script>
