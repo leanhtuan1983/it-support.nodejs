@@ -216,17 +216,17 @@
                       <td>${index + 1}</td>
                       <td>${com.name}</td>
                       <td>${com.location}</td>
-                      <td>${com.user_name}</td>
+                      <td>${com.username}</td>
                       <td>
                         <div class="d-md-flex gap-1">
                             <button type = "button" class ="btn btn-info" onclick="showUserInfo(${
-                              user.id
+                              com.id
                             })"><i class="bi bi-eye"></i></button>
                             <a href="#" class="btn btn-warning" onclick="switchToEdit(${
-                              user.id
+                              com.id
                             })"><i class="bi bi-pencil-square"></i></a>
                             <a class="btn btn-danger" href="#" onclick="deleteUser(${
-                              user.id
+                              com.id
                             })"><i class="bi bi-trash"></i></a>
                         </div>
                       </td>

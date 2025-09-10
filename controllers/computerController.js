@@ -42,7 +42,7 @@ exports.addComputer = async (req, res) => {
   const { name, location, user_id } = req.body;
   try {
     await query(
-      "INSERT INTO computes (name, location, user_id) VALUES (?, ?, ?)",
+      "INSERT INTO computers (name, location, user_id) VALUES (?, ?, ?)",
       [name, location, user_id]
     );
     res.json({ success: true, message: "Thêm thành công" });
