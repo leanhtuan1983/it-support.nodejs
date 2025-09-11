@@ -3,7 +3,7 @@ const { query } = require("../helpers/dbHelper");
 exports.index = (req, res) => {
   res.render("computers/index", {
     title: "Quản lý Computers",
-    cssFile: "breadcrumb.css",
+    cssFiles: ["breadcrumb.css", "computerTable.css"],
   });
 };
 
@@ -51,5 +51,27 @@ exports.addComputer = async (req, res) => {
     res
       .status(500)
       .json({ success: false, message: "Đã có lỗi khi thêm mới dữ liệu" });
+  }
+};
+
+exports.getComputerInfo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const rows = await query(
+      `SELECT  c.*, u.name AS username, d.id, d.name AS department_name
+    FROM computers c INNER JOIN users u ON c.user_id = u.id
+    INNER JOIN departments d ON u.department_id = d.id
+    WHERE c.id = ?`,
+      [id]
+    );
+    if (!rows || rows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy thông tin" });
+    }
+    res.json({ success: true, data: rows[0] });
+  } catch (err) {
+    console.error("Lỗi tải dữ liệu:", err);
+    res.status(500).json({ success: false, message: "Lỗi kết nối dữ liệu" });
   }
 };

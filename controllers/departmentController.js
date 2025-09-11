@@ -3,7 +3,7 @@ const { query } = require("../helpers/dbHelper");
 exports.index = (req, res) => {
   res.render("departments/index", {
     title: "Quản lý Departments",
-    cssFile: "breadcrumb.css",
+    cssFiles: ["breadcrumb.css"],
   });
 };
 

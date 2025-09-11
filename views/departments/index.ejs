@@ -1,3 +1,13 @@
+<style>
+  #msg {
+    opacity: 0;
+    transition: opacity 0.5s ease; /* mượt trong 0.5s */
+  }
+
+  #msg.show {
+    opacity: 1;
+  }
+</style>
 <div class="container-fluid">
   <!-- Hiển thị Breadcrumb -->
   <div class="row mt-2 ms-1 me-1">
@@ -36,7 +46,7 @@
     <!-- Form thêm mới/chỉnh sửa -->
     <div class="col-md-3">
       <!-- Msg hiển thị chung -->
-      <div id="msg" class="mt-2 d-none"></div>
+      <div id="msg"></div>
 
       <!-- Form Add -->
       <div class="card" id="addDept">
@@ -104,7 +114,9 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="infoModalLabel">Thông tin Department</h1>
+        <h1 class="modal-title fs-5" id="infoModalLabel">
+          Thông tin Department
+        </h1>
         <button
           type="button"
           class="btn-close"
@@ -131,11 +143,21 @@
   // Hiển thị message chung
   function showMessage(type, text) {
     const msgDiv = document.getElementById("msg");
-    msgDiv.classList.remove("d-none");
+
+    // gán nội dung
     msgDiv.innerHTML = `<div class="alert alert-${type}">${text}</div>`;
+
+    // hiện ra với hiệu ứng fade-in
+    msgDiv.classList.add("show");
+
+    // sau 3s thì fade-out
     setTimeout(() => {
-      msgDiv.classList.add("d-none");
-      msgDiv.innerHTML = "";
+      msgDiv.classList.remove("show");
+
+      // đợi hết transition rồi mới xóa nội dung
+      setTimeout(() => {
+        msgDiv.innerHTML = "";
+      }, 500); // khớp với transition 0.5s
     }, 3000);
   }
 

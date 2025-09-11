@@ -40,7 +40,7 @@
     <!-- Add/Edit form -->
     <div class="col-md-3">
       <!-- Show message -->
-      <div id="msg" class="mt-2 d-none"></div>
+      <div id="msg"></div>
 
       <!-- Add form (show) -->
       <div class="card" id="addNewComputer">
@@ -90,7 +90,7 @@
         </div>
       </div>
       <!-- Edit form -->
-      <div class="card shadow d-none" id="editUser">
+      <div class="card shadow d-none" id="editComputer">
         <div class="card-header bg-warning">Edit Computer</div>
         <div class="card-body">
           <form id="editComputerForm">
@@ -212,25 +212,25 @@
         tbody.innerHTML = "";
         data.data.forEach((com, index) => {
           const row = `
-                  <tr>
-                      <td>${index + 1}</td>
-                      <td>${com.name}</td>
-                      <td>${com.location}</td>
-                      <td>${com.username}</td>
-                      <td>
-                        <div class="d-md-flex gap-1">
-                            <button type = "button" class ="btn btn-info" onclick="showUserInfo(${
-                              com.id
-                            })"><i class="bi bi-eye"></i></button>
-                            <a href="#" class="btn btn-warning" onclick="switchToEdit(${
-                              com.id
-                            })"><i class="bi bi-pencil-square"></i></a>
-                            <a class="btn btn-danger" href="#" onclick="deleteUser(${
-                              com.id
-                            })"><i class="bi bi-trash"></i></a>
-                        </div>
-                      </td>
-                  </tr>`;
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${com.name}</td>
+                        <td>${com.location}</td>
+                        <td>${com.username}</td>
+                        <td>
+                          <div class="d-md-flex gap-1">
+                              <button type = "button" class ="btn btn-info" onclick="showUserInfo(${
+                                com.id
+                              })"><i class="bi bi-eye"></i></button>
+                              <a href="#" class="btn btn-warning" onclick="switchToEdit(${
+                                com.id
+                              })"><i class="bi bi-pencil-square"></i></a>
+                              <a class="btn btn-danger" href="#" onclick="deleteUser(${
+                                com.id
+                              })"><i class="bi bi-trash"></i></a>
+                          </div>
+                        </td>
+                    </tr>`;
           tbody.innerHTML += row;
         });
         //   Khởi tạo datatable mới
@@ -289,7 +289,6 @@
     });
 
   // Add computer
-
   document
     .getElementById("addComputerForm")
     .addEventListener("submit", async (e) => {
@@ -317,6 +316,19 @@
         console.error("Có lỗi khi thêm mới dữ liệu:", err);
       }
     });
+
+  // Edit computer
+  // Switch to edit form
+  async function switchToEdit(comId) {
+    document.getElementById("addNewComputer").classList.add("d-none");
+    document.getElementById("editComputer").classList.remove("d-none");
+  }
+
+  function cancelEdit() {
+    document.getElementById("editComputer").classList.add("d-none");
+    document.getElementById("addNewComputer").classList.remove("d-none");
+    document.getElementById("editComputerForm").reset();
+  }
 
   window.onload = loadComputerList;
 </script>

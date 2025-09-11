@@ -3,7 +3,7 @@ const { query } = require("../helpers/dbHelper");
 exports.index = (req, res) => {
   res.render("users/index", {
     title: "Quản lý Computers",
-    cssFile: "breadcrumb.css",
+    cssFiles: ["breadcrumb.css"],
   });
 };
 

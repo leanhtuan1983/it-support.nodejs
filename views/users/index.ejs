@@ -1,3 +1,13 @@
+<style>
+  #msg {
+    opacity: 0;
+    transition: opacity 0.5s ease; /* mượt trong 0.5s */
+  }
+
+  #msg.show {
+    opacity: 1;
+  }
+</style>
 <div class="container-fluid">
   <!-- Breadcrumb -->
   <div class="row mt-2 ms-1 me-1">
@@ -42,7 +52,7 @@
     <!-- Add/Edit form -->
     <div class="col-md-3">
       <!-- Show message -->
-      <div id="msg" class="mt-2 d-none"></div>
+      <div id="msg"></div>
 
       <!-- Add form (show) -->
       <div class="card" id="addNewUser">
@@ -304,12 +314,22 @@
 <script>
   // Message chung
   function showMessage(type, text) {
-    const msDiv = document.getElementById("msg");
-    msDiv.classList.remove("d-none");
-    msDiv.innerHTML = `<div class="alert alert-${type}">${text}</div>`;
+    const msgDiv = document.getElementById("msg");
+
+    // gán nội dung
+    msgDiv.innerHTML = `<div class="alert alert-${type}">${text}</div>`;
+
+    // hiện ra với hiệu ứng fade-in
+    msgDiv.classList.add("show");
+
+    // sau 3s thì fade-out
     setTimeout(() => {
-      msDiv.classList.add("d-none");
-      msDiv.innerHTML = "";
+      msgDiv.classList.remove("show");
+
+      // đợi hết transition rồi mới xóa nội dung
+      setTimeout(() => {
+        msgDiv.innerHTML = "";
+      }, 500); // khớp với transition 0.5s
     }, 3000);
   }
 </script>
