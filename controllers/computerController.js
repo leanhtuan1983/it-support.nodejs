@@ -10,17 +10,18 @@ exports.index = (req, res) => {
 exports.fetchComputerData = async (req, res) => {
   try {
     const results = await query(
-      `SELECT c.*, d.id, d.name AS department_name, u.id, u.name AS username FROM computers c
+      `SELECT 
+        c.id AS computer_id, c.name, c.location, 
+        u.id AS user_id, u.name AS username, 
+        d.id AS department_id, d.name AS department_name
+      FROM computers c
       INNER JOIN users u ON c.user_id = u.id
-      INNER JOIN departments d ON u.department_id = d.id  
-      `
+      INNER JOIN departments d ON u.department_id = d.id`
     );
     res.json({ success: true, data: results });
   } catch (err) {
     console.error("Lỗi truy vấn dữ liệu:", err);
-    res
-      .status(500)
-      .json({ success: false, message: "Lỗi truy vấn Cơ sở dữ liệu" });
+    res.status(500).json({ success: false, message: "Lỗi truy vấn CSDL" });
   }
 };
 
@@ -58,7 +59,7 @@ exports.getComputerInfo = async (req, res) => {
   try {
     const { id } = req.params;
     const rows = await query(
-      `SELECT  c.*, u.name AS username, d.id, d.name AS department_name
+      `SELECT  c.*, u.name AS username, d.id AS department_id, d.name AS department_name
     FROM computers c INNER JOIN users u ON c.user_id = u.id
     INNER JOIN departments d ON u.department_id = d.id
     WHERE c.id = ?`,
@@ -73,5 +74,45 @@ exports.getComputerInfo = async (req, res) => {
   } catch (err) {
     console.error("Lỗi tải dữ liệu:", err);
     res.status(500).json({ success: false, message: "Lỗi kết nối dữ liệu" });
+  }
+};
+
+exports.updateComputer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, location, user_id } = req.body;
+
+    if (!name || !location || !user_id) {
+      return res.json({ success: false, message: "Thiếu thông tin cập nhật" });
+    }
+    await query(
+      `UPDATE computers SET
+      name = ?, location = ?, user_id = ?
+      WHERE id = ?`,
+      [name, location, user_id, id]
+    );
+    res.json({ success: true, message: "Cập nhật thành công" });
+  } catch (err) {
+    console.error("Lỗi cập nhật:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Lỗi kết nối cơ sở dữ liệu" });
+  }
+};
+
+exports.deleteComputer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const rows = await query("SELECT id FROM computers WHERE id = ?", [id]);
+    if (!rows || rows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy dữ liệu" });
+    }
+    await query("DELETE FROM computers WHERE id = ?", [id]);
+    res.json({ success: true, message: "Xóa thành công" });
+  } catch (err) {
+    console.error("Lỗi xóa dữ liệu:", err);
+    res.status(500).json({ success: false, message: "Lỗi xóa dữ liệu" });
   }
 };

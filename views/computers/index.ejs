@@ -1,3 +1,13 @@
+<style>
+  #msg {
+    opacity: 0;
+    transition: opacity 0.5s ease; /* mượt trong 0.5s */
+  }
+
+  #msg.show {
+    opacity: 1;
+  }
+</style>
 <div class="container-fluid">
   <!-- Breadcrumb -->
   <div class="row mt-2 ms-1 me-1">
@@ -19,7 +29,7 @@
                 <th>#</th>
                 <th>Name</th>
                 <th>Location</th>
-                <th>Owner</th>
+                <th>Owner/Department</th>
                 <th>Action</th>
               </tr>
             </thead>
@@ -29,7 +39,7 @@
                 <th>#</th>
                 <th>Name</th>
                 <th>Location</th>
-                <th>Owner</th>
+                <th>Owner/Department</th>
                 <th>Action</th>
               </tr>
             </tfoot>
@@ -193,11 +203,36 @@
 <script src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
 <script src="https://cdn.datatables.net/2.3.3/js/dataTables.bootstrap5.js"></script>
 
-<!-- JS Load danh sách departments cho user -->
+<!-- JS Load danh sách departments cho add computer -->
 <script src="/js/loadDepartmentList.js"></script>
 
+<!-- JS Load danh sách departments và users cho edit computer -->
+<!-- <script src="/js/loadDepartmentAndUserEdit.js"></script> -->
+
 <script>
-  // Load danh sách computer
+  // ============ Hiển thị message ==========================
+  // Message chung
+  function showMessage(type, text) {
+    const msgDiv = document.getElementById("msg");
+
+    // gán nội dung
+    msgDiv.innerHTML = `<div class="alert alert-${type}">${text}</div>`;
+
+    // hiện ra với hiệu ứng fade-in
+    msgDiv.classList.add("show");
+
+    // sau 3s thì fade-out
+    setTimeout(() => {
+      msgDiv.classList.remove("show");
+
+      // đợi hết transition rồi mới xóa nội dung
+      setTimeout(() => {
+        msgDiv.innerHTML = "";
+      }, 500); // khớp với transition 0.5s
+    }, 3000);
+  }
+
+  //=========== Load danh sách computer======================
   async function loadComputerList() {
     try {
       const res = await fetch("/computers/fetchComputerData");
@@ -212,28 +247,28 @@
         tbody.innerHTML = "";
         data.data.forEach((com, index) => {
           const row = `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td>${com.name}</td>
-                        <td>${com.location}</td>
-                        <td>${com.username}</td>
-                        <td>
-                          <div class="d-md-flex gap-1">
-                              <button type = "button" class ="btn btn-info" onclick="showUserInfo(${
-                                com.id
-                              })"><i class="bi bi-eye"></i></button>
-                              <a href="#" class="btn btn-warning" onclick="switchToEdit(${
-                                com.id
-                              })"><i class="bi bi-pencil-square"></i></a>
-                              <a class="btn btn-danger" href="#" onclick="deleteUser(${
-                                com.id
-                              })"><i class="bi bi-trash"></i></a>
-                          </div>
-                        </td>
-                    </tr>`;
+  <tr>
+    <td>${index + 1}</td>
+    <td>${com.name}</td>
+    <td>${com.location}</td>
+    <td>${com.username} (${com.department_name})</td>
+    <td>
+      <div class="d-md-flex gap-1">
+        <button type="button" class="btn btn-info" onclick="showComputerInfo(${
+          com.computer_id
+        })"><i class="bi bi-eye"></i></button>
+        <a href="#" class="btn btn-warning" onclick="switchToEdit(${
+          com.computer_id
+        })"><i class="bi bi-pencil-square"></i></a>
+        <a class="btn btn-danger" href="#" onclick="deleteComputer(${
+          com.computer_id
+        })"><i class="bi bi-trash"></i></a>
+      </div>
+    </td>
+  </tr>`;
           tbody.innerHTML += row;
         });
-        //   Khởi tạo datatable mới
+        //Khởi tạo datatable mới
 
         new DataTable("#computerListTable");
       } else {
@@ -245,7 +280,7 @@
     }
   }
 
-  //   Load danh sách user theo department
+  //Load danh sách user theo department
   async function loadUserByDept(deptId) {
     try {
       const res = await fetch(`/computers/getUserByDept/${deptId}`);
@@ -268,14 +303,14 @@
         });
       } else {
         console.warn("Không có user nào thuộc phòng ban:", userListByDept);
+        showMessage("danger", data.message);
       }
     } catch (err) {
       console.error("Lỗi tải dữ liệu:", err);
+      showMessage("danger", data.message);
     }
   }
-
   // Bắt sự kiện khi chọn department -> load danh sách user của department được chọn
-
   document
     .getElementById("departmentList")
     .addEventListener("change", function () {
@@ -288,7 +323,7 @@
       }
     });
 
-  // Add computer
+  //=========================Add computer===============================
   document
     .getElementById("addComputerForm")
     .addEventListener("submit", async (e) => {
@@ -298,7 +333,7 @@
       const user_id = document.getElementById("user_id").value;
 
       if (!name && !user_id) {
-        alert("Không được để trống name hoặc owner");
+        showMessage("danger", data.message);
       }
       try {
         const res = await fetch("/computers/addComputer", {
@@ -308,7 +343,7 @@
         });
         const data = await res.json();
         if (data.success) {
-          alert("Thêm thành công");
+          showMessage("success", data.message);
           document.getElementById("addComputerForm").reset();
           loadComputerList();
         }
@@ -317,18 +352,175 @@
       }
     });
 
-  // Edit computer
+  //================ Edit computer===================================
   // Switch to edit form
   async function switchToEdit(comId) {
     document.getElementById("addNewComputer").classList.add("d-none");
     document.getElementById("editComputer").classList.remove("d-none");
+    document.getElementById("editComputerForm").setAttribute("data-id", comId);
+
+    try {
+      // Lấy chi tiết computer
+      const res = await fetch(`/computers/getComputerInfo/${comId}`);
+      const data = await res.json();
+
+      if (data.success) {
+        const computer = data.data;
+
+        // =========== Load department list ===========
+        const deptRes = await fetch("/departments/fetchDeptData");
+        const deptData = await deptRes.json();
+
+        const deptSelect = document.getElementById("departmentListEdit");
+        deptSelect.innerHTML = "";
+
+        if (deptData.success) {
+          deptData.data.forEach((dept) => {
+            const option = document.createElement("option");
+            option.value = dept.id;
+            option.textContent = dept.name;
+            if (dept.id === computer.department_id) {
+              option.selected = true;
+            }
+            deptSelect.appendChild(option);
+          });
+        }
+
+        // =========== Load user list theo department ===========
+        const userRes = await fetch(
+          `/computers/getUserByDept/${computer.department_id}`
+        );
+        const userData = await userRes.json();
+
+        const userSelect = document.getElementById("userListEdit");
+        userSelect.innerHTML = "";
+
+        if (userData.success) {
+          userData.data.forEach((user) => {
+            const option = document.createElement("option");
+            option.value = user.id;
+            option.textContent = user.name;
+            if (user.id === computer.user_id) {
+              option.selected = true;
+            }
+            userSelect.appendChild(option);
+          });
+        }
+
+        // =========== Gán giá trị khác ===========
+        document.getElementById("nameEdit").value = computer.name;
+        document.getElementById("locationEdit").value = computer.location;
+      }
+    } catch (err) {
+      console.error("Lỗi truy vấn:", err);
+      showMessage("danger", data.message);
+    }
   }
 
+  document
+    .getElementById("departmentListEdit")
+    .addEventListener("change", async function () {
+      const deptId = this.value;
+      const userSelect = document.getElementById("userListEdit");
+      userSelect.innerHTML = "";
+
+      if (deptId) {
+        const userRes = await fetch(`/computers/getUserByDept/${deptId}`);
+        const userData = await userRes.json();
+
+        if (userData.success) {
+          userData.data.forEach((user) => {
+            const option = document.createElement("option");
+            option.value = user.id;
+            option.textContent = user.name;
+            userSelect.appendChild(option);
+          });
+        }
+      } else {
+        userSelect.innerHTML = '<option value="">Chọn user</option>';
+      }
+    });
+  // Hủy form edit
   function cancelEdit() {
     document.getElementById("editComputer").classList.add("d-none");
     document.getElementById("addNewComputer").classList.remove("d-none");
     document.getElementById("editComputerForm").reset();
   }
 
+  // Submit update
+  document
+    .getElementById("editComputerForm")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const id = e.target.getAttribute("data-id");
+      const name = document.getElementById("nameEdit").value.trim();
+      const location = document.getElementById("locationEdit").value;
+      const user_id = document.getElementById("userListEdit").value;
+
+      try {
+        const res = await fetch(`/computers/update/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name, location, user_id }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showMessage("success", data.message);
+          cancelEdit();
+          loadComputerList();
+        } else {
+          alert("Cập nhật thất bại");
+        }
+      } catch (err) {
+        console.error("Lỗi cập nhật database:", err);
+        showMessage("danger", data.message);
+      }
+    });
+
+  async function deleteComputer(id) {
+    if (!confirm("Bạn có chắc chắn muốn xóa thiết bị này?")) return;
+    try {
+      const res = await fetch(`/computers/delete/${id}`, { method: "DELETE" });
+      const data = await res.json();
+
+      if (data.success) {
+        showMessage("success", data.message);
+        loadComputerList();
+      } else {
+        showMessage("danger", data.message);
+      }
+    } catch (err) {
+      console.error("Lỗi xóa thiết bị:", err);
+      showMessage("danger", data.message);
+    }
+  }
+
+  // Show computer info
+  async function showComputerInfo(id) {
+    try {
+      const res = await fetch(`/computers/getComputerInfo/${id}`);
+      const data = await res.json();
+
+      if (data.success) {
+        const modalLabel = document.getElementById("infoModalLabel");
+        const modalBody = document.querySelector("#infoModal .modal-body");
+
+        modalBody.innerHTML = `
+        <p><strong>ID:</strong> ${data.data.id}</p>
+        <p><strong>Name:</strong> ${data.data.name}</p>
+        <p><strong>Location:</strong> ${data.data.location}</p>
+        <p><strong>Owner(Department):</strong> ${data.data.username} (${data.data.department_name})</p>
+        `;
+
+        const modal = new bootstrap.Modal(document.getElementById("infoModal"));
+        modal.show();
+      } else {
+        alert(data.message || "Không tìm thấy thông tin thiết bị");
+      }
+    } catch (err) {
+      console.error("Lỗi truy vấn:", err);
+      alert("Lỗi truy vấn dữ liệu");
+    }
+  }
   window.onload = loadComputerList;
 </script>
