@@ -1,2 +1,114 @@
-<h1 class="mt-4">Dashboard</h1>
-<p>Đây là trang Dashboard.</p>
+<div class="container-fluid">
+  <!-- Breadcrumb -->
+  <div class="row mt-2 ms-1 me-1">
+    <ul class="breadcrumb rounded">
+      <li><a href="#">Dashboard</a></li>
+    </ul>
+  </div>
+  <!-- Main content -->
+  <div class="row mt-2 mb-2 d-flex justify-content-between">
+    <div class="col-md-12 d-flex justify-content-between">
+      <div class="col-md-4">
+        <div class="card m-2 shadow">
+          <div class="card-header">
+            <h5 class="text-center">Tổng số lượng thiết bị</h5>
+          </div>
+          <div class="card-body bg-info">
+            <h1 id="totalEq" class="text-center">0</h1>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card m-2 shadow">
+          <div class="card-header">
+            <h5 class="text-center">Đang sử dụng</h5>
+          </div>
+          <div class="card-body bg-success">
+            <h1 id="eqInUse" class="text-center">0</h1>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card m-2 shadow">
+          <div class="card-header"><h5 class="text-center">Báo lỗi</h5></div>
+          <div class="card-body bg-warning"><h2>120</h2></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal info -->
+  <div
+    class="modal fade"
+    id="infoModal"
+    tabindex="-1"
+    aria-labelledby="infoModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="infoModalLabel">
+            Thông tin Computer
+          </h1>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">...</div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS DataTable -->
+  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+  <script src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
+  <script src="https://cdn.datatables.net/2.3.3/js/dataTables.bootstrap5.js"></script>
+</div>
+<script>
+  async function loadTotalEq() {
+    try {
+      const res = await fetch("/dashboard/totalEq");
+      const data = await res.json();
+
+      if (data.success) {
+        document.getElementById("totalEq").textContent = data.data;
+        loadEqInUse();
+      } else {
+        document.getElementById("totalEq").textContent = "Lỗi dữ liệu";
+      }
+    } catch (err) {
+      console.error("Fetch lỗi:", err);
+      document.getElementById("totalEq").textContent = "Error";
+    }
+  }
+
+  async function loadEqInUse() {
+    const res = await fetch("/dashboard/eqInUse");
+    const data = await res.json();
+
+    try {
+      if (data.success) {
+        document.getElementById("eqInUse").textContent = data.data;
+      } else {
+        document.getElementById("eqInUse").textContent = "Lỗi dữ liệu";
+      }
+    } catch (err) {
+      console.error("Lỗi truy vấn:", err);
+      document.getElementById("eqInUse").textContent = "Error";
+    }
+  }
+  loadTotalEq();
+</script>
