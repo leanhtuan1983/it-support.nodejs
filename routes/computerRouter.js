@@ -6,6 +6,10 @@ const computerController = require("../controllers/computerController");
 router.get("/", computerController.index);
 router.get("/fetchComputerData", computerController.fetchComputerData);
 router.post("/addComputer", computerController.addComputer);
+router.get(
+  "/getComputerListByUserId",
+  computerController.getComputerListByUserId
+);
 router.get("/getUserByDept/:id", computerController.fetchUserByDept);
 router.get("/getComputerInfo/:id", computerController.getComputerInfo);
 router.put("/update/:id", computerController.updateComputer);

@@ -13,5 +13,7 @@ const {
 router.get("/", isLoggedIn, dashboardController.index);
 router.get("/totalEq", isLoggedIn, dashboardController.totalEq);
 router.get("/eqInUse", isLoggedIn, dashboardController.eqInUse);
+router.get("/repairReq", isLoggedIn, dashboardController.repairReqTicket);
+router.get("/setupReq", isLoggedIn, dashboardController.setupReqTicket);
 
 module.exports = router;

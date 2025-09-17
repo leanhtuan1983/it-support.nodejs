@@ -116,3 +116,22 @@ exports.deleteComputer = async (req, res) => {
     res.status(500).json({ success: false, message: "Lỗi xóa dữ liệu" });
   }
 };
+
+exports.getComputerListByUserId = async (req, res) => {
+  try {
+    const user_id = req.session.user.id; // lấy id từ session
+    const results = await query("SELECT * FROM computers WHERE user_id = ?", [
+      user_id,
+    ]);
+    console.log("Kết quả:", results);
+    console.log("Session user:", req.session.user);
+    res.json({ success: true, data: results });
+  } catch (err) {
+    console.error("Lỗi truy vấn dữ liệu:", err);
+    res.status(500).json({ success: false, message: "Lỗi truy vấn dữ liệu" });
+  }
+};
+
+exports.getPartnerComputer = async (req, res) => {
+
+}

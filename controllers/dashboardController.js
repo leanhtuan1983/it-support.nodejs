@@ -28,3 +28,27 @@ exports.eqInUse = async (req, res) => {
     res.status(500).json({ success: false, message: "Lỗi truy vấn database" });
   }
 };
+
+exports.repairReqTicket = async (req, res) => {
+  try {
+    const repairReq = await query(
+      "SELECT COUNT(id) AS repair_req FROM tickets WHERE type = 1"
+    );
+    res.json({ success: true, data: repairReq[0].repair_req });
+  } catch (err) {
+    console.error("Lỗi truy vẫn dữ liệu:", err);
+    res.status(500).json({ success: false, message: "Lỗi truy vấn database" });
+  }
+};
+
+exports.setupReqTicket = async (req, res) => {
+  try {
+    const setupReq = await query(
+      "SELECT COUNT(id) AS setup_req FROM tickets WHERE type = 2"
+    );
+    res.json({ success: true, data: setupReq[0].setup_req });
+  } catch (err) {
+    console.error("Lỗi truy vẫn dữ liệu:", err);
+    res.status(500).json({ success: false, message: "Lỗi truy vấn database" });
+  }
+};

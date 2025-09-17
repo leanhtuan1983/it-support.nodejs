@@ -9,6 +9,7 @@ const dashboardRouter = require("./routes/dashboardRouter");
 const userRouter = require("./routes/userRouter");
 const departmentRouter = require("./routes/departmentRouter");
 const computerRouter = require("./routes/computerRouter");
+const ticketRouter = require("./routes/ticketRouter");
 
 const app = express();
 
@@ -46,5 +47,6 @@ app.use("/dashboard", dashboardRouter);
 app.use("/users", userRouter);
 app.use("/departments", departmentRouter);
 app.use("/computers", computerRouter);
+app.use("/tickets", ticketRouter);
 
 module.exports = app;

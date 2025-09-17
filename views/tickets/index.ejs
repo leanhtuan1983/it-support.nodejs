@@ -1,0 +1,244 @@
+<style>
+  #msg {
+    opacity: 0;
+    transition: opacity 0.5s ease; /* mượt trong 0.5s */
+  }
+
+  #msg.show {
+    opacity: 1;
+  }
+</style>
+<div class="container-fluid">
+  <!-- Hiển thị Breadcrumb -->
+  <div class="row mt-2 ms-1 me-1">
+    <ul class="breadcrumb rounded">
+      <li><a href="#">Home</a></li>
+    </ul>
+  </div>
+  <!-- Nội dung chính -->
+  <div class="row mt-2 mb-2 d-flex justify-content-between">
+    <!-- Form tạo ticket cho người đăng nhập -->
+    <div class="col-12" id="makeOwnTicket">
+      <div class="card shadow">
+        <div
+          class="card-header d-flex justify-content-between bg-primary text-center text-white"
+        >
+          <h5 class="mt-2">Tạo yêu cầu</h5>
+          <button
+            class="btn btn-outline-warning"
+            onclick="switchToPartnerForm()"
+          >
+            Tạo yêu cầu cho người khác
+          </button>
+        </div>
+        <div class="card-body">
+          <form id="addOwnTicket">
+            <div class="row d-md-flex">
+              <div class="col-md-6">
+                <div class="form-group mb-4 me-3">
+                  <label for="computer_id">Computer</label>
+                  <select
+                    class="form-select mt-2"
+                    aria-label="Default select example"
+                    id="computer_id"
+                  >
+                    <option selected>Open this select menu</option>
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group mb-4 ms-3">
+                  <label for="type">Type</label>
+                  <select
+                    class="form-select mt-2"
+                    aria-label="Default select example"
+                    id="type"
+                  >
+                    <option selected>Open this select menu</option>
+                    <option value="1">Repair</option>
+                    <option value="2">Setup</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <label for="description" class="form-label">Description:</label>
+                <textarea
+                  class="form-control"
+                  id="description"
+                  rows="5"
+                ></textarea>
+              </div>
+            </div>
+            <div class="d-flex justify-content-center">
+              <button type="submit" class="btn btn-primary mt-3 mb-1">
+                Gửi yêu cầu
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Form tạo ticket cho người khác -->
+    <div class="col-12 d-none" id="makePartnerTicket">
+      <div class="card shadow">
+        <div
+          class="card-header d-flex justify-content-between bg-primary text-center text-white"
+        >
+          <h5 class="mt-2">Tạo yêu cầu</h5>
+          <button class="btn btn-outline-warning" onclick="switchToOwnForm()">
+            Tạo yêu cầu cho bản thân
+          </button>
+        </div>
+        <div class="card-body">
+          <form id="addPartnerTicket">
+            <div class="row d-md-flex">
+              <div class="col-md-6">
+                <div class="form-group mb-4 me-3">
+                  <label for="department_id">Department</label>
+                  <select
+                    class="form-select mt-2"
+                    aria-label="Default select example"
+                    id="department_id"
+                  >
+                    <option selected>Open this select menu</option>
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group mb-4 ms-3">
+                  <label for="partner_user_id">User</label>
+                  <select
+                    class="form-select mt-2"
+                    aria-label="Default select example"
+                    id="partner_user_id"
+                  >
+                    <option selected>Open this select menu</option>
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row d-md-flex">
+              <div class="col-md-6">
+                <div class="form-group mb-4 me-3">
+                  <label for="partner_computer_id">Computer</label>
+                  <select
+                    class="form-select mt-2"
+                    aria-label="Default select example"
+                    id="partner_computer_id"
+                  >
+                    <option selected>Open this select menu</option>
+                    <option value=""></option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group mb-4 ms-3">
+                  <label for="partner_type">Type</label>
+                  <select
+                    class="form-select mt-2"
+                    aria-label="Default select example"
+                    id="partner_type"
+                  >
+                    <option selected>Open this select menu</option>
+                    <option value="1">Repair</option>
+                    <option value="2">Setup</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <label for="partnet_description" class="form-label"
+                  >Description:</label
+                >
+                <textarea
+                  class="form-control"
+                  id="partnet_description"
+                  rows="5"
+                ></textarea>
+              </div>
+            </div>
+            <div class="d-flex justify-content-center">
+              <button type="submit" class="btn btn-primary mt-3 mb-1">
+                Gửi yêu cầu
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Modal info -->
+  <div
+    class="modal fade"
+    id="infoModal"
+    tabindex="-1"
+    aria-labelledby="infoModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="infoModalLabel">
+            Thông tin Department
+          </h1>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">...</div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JS DataTable -->
+  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+  <script src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
+  <script src="https://cdn.datatables.net/2.3.3/js/dataTables.bootstrap5.js"></script>
+</div>
+<script>
+  async function switchToPartnerForm() {
+    document.getElementById("makeOwnTicket").classList.add("d-none");
+    document.getElementById("makePartnerTicket").classList.remove("d-none");
+  }
+
+  async function switchToOwnForm() {
+    document.getElementById("makePartnerTicket").classList.add("d-none");
+    document.getElementById("makeOwnTicket").classList.remove("d-none");
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    fetch("/computers/getComputerListByUserId")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          const select = document.getElementById("computer_id");
+          select.innerHTML = '<option value="">-- Chọn máy tính --</option>';
+          data.data.forEach((computer) => {
+            const opt = document.createElement("option");
+            opt.value = computer.id; // giả sử cột PK là id
+            opt.textContent = computer.name; // giả sử có cột name
+            select.appendChild(opt);
+          });
+        }
+      })
+      .catch((err) => console.error("Lỗi fetch:", err));
+  });
+</script>
