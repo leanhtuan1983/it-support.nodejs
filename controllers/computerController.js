@@ -116,22 +116,30 @@ exports.deleteComputer = async (req, res) => {
     res.status(500).json({ success: false, message: "Lỗi xóa dữ liệu" });
   }
 };
-
+// Lấy danh sách computer theo tài khoản đăng nhập
 exports.getComputerListByUserId = async (req, res) => {
   try {
     const user_id = req.session.user.id; // lấy id từ session
     const results = await query("SELECT * FROM computers WHERE user_id = ?", [
       user_id,
     ]);
-    console.log("Kết quả:", results);
-    console.log("Session user:", req.session.user);
     res.json({ success: true, data: results });
   } catch (err) {
     console.error("Lỗi truy vấn dữ liệu:", err);
     res.status(500).json({ success: false, message: "Lỗi truy vấn dữ liệu" });
   }
 };
-
-exports.getPartnerComputer = async (req, res) => {
-
-}
+// Lấy danh sách computer cho người khác
+exports.fetchComputerBySelectedUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const computerList = await query(
+      "SELECT id, name FROM computers WHERE user_id = ?",
+      [id]
+    );
+    res.json({ success: true, data: computerList });
+  } catch (err) {
+    console.error("Lỗi tải danh sách users:", err);
+    res.status(500).json({ success: false, message: "Lỗi tải dữ liệu" });
+  }
+};

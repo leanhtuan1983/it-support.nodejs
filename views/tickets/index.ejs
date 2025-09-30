@@ -97,11 +97,11 @@
             <div class="row d-md-flex">
               <div class="col-md-6">
                 <div class="form-group mb-4 me-3">
-                  <label for="department_id">Department</label>
+                  <label for="departmentList">Department</label>
                   <select
                     class="form-select mt-2"
                     aria-label="Default select example"
-                    id="department_id"
+                    id="departmentList"
                   >
                     <option selected>Open this select menu</option>
                     <option value=""></option>
@@ -212,18 +212,22 @@
   <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
   <script src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
   <script src="https://cdn.datatables.net/2.3.3/js/dataTables.bootstrap5.js"></script>
+
+  <!-- JS Load danh sách departments cho form gửi hộ y/c cho người khác -->
+  <script src="/js/loadDepartmentList.js"></script>
 </div>
 <script>
+  // Chuyển sang form gừi yêu cầu cho người khác
   async function switchToPartnerForm() {
     document.getElementById("makeOwnTicket").classList.add("d-none");
     document.getElementById("makePartnerTicket").classList.remove("d-none");
   }
-
+  // Trở lại form chính
   async function switchToOwnForm() {
     document.getElementById("makePartnerTicket").classList.add("d-none");
     document.getElementById("makeOwnTicket").classList.remove("d-none");
   }
-
+  // Gán dữ liệu cho form chính
   document.addEventListener("DOMContentLoaded", () => {
     fetch("/computers/getComputerListByUserId")
       .then((res) => res.json())
@@ -233,12 +237,110 @@
           select.innerHTML = '<option value="">-- Chọn máy tính --</option>';
           data.data.forEach((computer) => {
             const opt = document.createElement("option");
-            opt.value = computer.id; // giả sử cột PK là id
-            opt.textContent = computer.name; // giả sử có cột name
+            opt.value = computer.id;
+            opt.textContent = computer.name;
             select.appendChild(opt);
           });
         }
       })
       .catch((err) => console.error("Lỗi fetch:", err));
   });
+
+  // Gán dữ liệu cho form gửi yêu cầu hộ
+  //Load danh sách user theo department
+  async function loadUserByDept(deptId) {
+    try {
+      const res = await fetch(`/computers/getUserByDept/${deptId}`);
+      const userListByDept = await res.json();
+
+      const selectUser = document.getElementById("partner_user_id");
+      selectUser.innerHTML = "";
+
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "Chọn user";
+      selectUser.appendChild(defaultOption);
+
+      if (userListByDept.success && Array.isArray(userListByDept.data)) {
+        userListByDept.data.forEach((user) => {
+          const opt = document.createElement("option");
+          opt.value = user.id;
+          opt.textContent = user.name;
+          selectUser.appendChild(opt);
+        });
+      } else {
+        console.warn("Không có user nào thuộc phòng ban:", userListByDept);
+        showMessage("danger", data.message);
+      }
+    } catch (err) {
+      console.error("Lỗi tải dữ liệu:", err);
+      showMessage("danger", data.message);
+    }
+  }
+  // Bắt sự kiện khi chọn department -> load danh sách user của department được chọn
+  document
+    .getElementById("departmentList")
+    .addEventListener("change", function () {
+      const deptId = this.value;
+      if (deptId) {
+        loadUserByDept(deptId);
+      } else {
+        document.getElementById("partner_user_id").innerHTML =
+          '<option value="">Chọn user</option>';
+      }
+    });
+
+  // Load danh sách computer theo user
+  async function getComputerListByUserId(user_id) {
+    try {
+      const res = await fetch(
+        `/computers/fetchComputerBySelectedUser/${user_id}`
+      );
+      const computerListByUser = await res.json();
+
+      const selectComputer = document.getElementById("partner_computer_id");
+      selectComputer.innerHTML = "";
+
+      const defaultOption = document.createElement("option");
+      defaultOption.value = "";
+      defaultOption.textContent = "Chọn computer";
+      selectComputer.appendChild(defaultOption);
+
+      if (
+        computerListByUser.success &&
+        Array.isArray(computerListByUser.data)
+      ) {
+        computerListByUser.data.forEach((com) => {
+          const opt = document.createElement("option");
+          opt.value = com.id;
+          opt.textContent = com.name;
+          selectComputer.appendChild(opt);
+        });
+      } else {
+        console.warn("Không có computer nào cho user:", computerListByUser);
+      }
+    } catch (err) {
+      console.error("Lỗi tải dữ liệu:", err);
+    }
+  }
+  // Bắt sự kiện chọn user -> load danh sách máy tính
+  document
+    .getElementById("partner_user_id")
+    .addEventListener("change", function () {
+      const user_id = this.value;
+      if (user_id) {
+        getComputerListByUserId(user_id);
+      } else {
+        document.getElementById("partner_user_id").innerHTML =
+          '<option value ="">Chọn computer</option>';
+      }
+    });
+  // Tạo ticket cho mình
+  document
+    .getElementById("addOwnTicket")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const computerId = document.getElementById("computer_id").value;
+      const type = document.getElementById("type").value;
+    });
 </script>
