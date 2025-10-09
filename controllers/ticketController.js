@@ -30,15 +30,26 @@ exports.fetchTicketData = async (req, res) => {
   }
 };
 
-
 exports.addOwnTicket = async (req, res) => {
   const { computer_id, type, descriptions } = req.body;
-  const user_id = req.session.id;
+  const user_id = req.session.user.id; // Lấy ID user đang đăng nhập
+
+  // Kiểm tra session hoặc dữ liệu bị thiếu
+  if (!user_id || !computer_id || !type || !descriptions) {
+    return res.status(400).json({
+      success: false,
+      message: "Thiếu thông tin cần thiết hoặc chưa đăng nhập",
+    });
+  }
+
   try {
     await query(
-      "INSERT INTO ticket (computer_id, owner_user_id,reported_by_user_id, type, descriptions, created_at, status) VALUES (?,?,?,?,?,?,?)",
-      [computer_id, user_id, user_id, type, descriptions, now(), 0]
+      `INSERT INTO tickets 
+        (computer_id, owner_user_id, reported_by_user_id, type, descriptions, created_at, status)
+       VALUES (?,?,?,?,?,NOW(),?)`,
+      [computer_id, user_id, user_id, type, descriptions, 0]
     );
+
     res.json({ success: true, message: "Gửi yêu cầu thành công" });
   } catch (err) {
     console.error("Có lỗi khi gửi yêu cầu:", err);

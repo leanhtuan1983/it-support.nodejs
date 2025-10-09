@@ -17,6 +17,8 @@
   </div>
   <!-- Nội dung chính -->
   <div class="row mt-2 mb-2 d-flex justify-content-between">
+    <!-- Show message -->
+    <div id="msg"></div>
     <!-- Form tạo ticket cho người đăng nhập -->
     <div class="col-12" id="makeOwnTicket">
       <div class="card shadow">
@@ -217,6 +219,25 @@
   <script src="/js/loadDepartmentList.js"></script>
 </div>
 <script>
+  function showMessage(type, text) {
+    const msgDiv = document.getElementById("msg");
+
+    // gán nội dung
+    msgDiv.innerHTML = `<div class="alert alert-${type}">${text}</div>`;
+
+    // hiện ra với hiệu ứng fade-in
+    msgDiv.classList.add("show");
+
+    // sau 3s thì fade-out
+    setTimeout(() => {
+      msgDiv.classList.remove("show");
+
+      // đợi hết transition rồi mới xóa nội dung
+      setTimeout(() => {
+        msgDiv.innerHTML = "";
+      }, 500); // khớp với transition 0.5s
+    }, 3000);
+  }
   // Chuyển sang form gừi yêu cầu cho người khác
   async function switchToPartnerForm() {
     document.getElementById("makeOwnTicket").classList.add("d-none");
@@ -340,7 +361,37 @@
     .getElementById("addOwnTicket")
     .addEventListener("submit", async (e) => {
       e.preventDefault();
-      const computerId = document.getElementById("computer_id").value;
-      const type = document.getElementById("type").value;
+      const computerId = document.getElementById("computer_id").value.trim();
+      const type = document.getElementById("type").value.trim();
+      const description = document.getElementById("description").value.trim();
+
+      if (!computerId || !type || !description) {
+        showMessage("danger", "Vui lòng điền đầy đủ thông tin!");
+        return;
+      }
+
+      try {
+        const res = await fetch("/tickets/addOwnTicket", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            computer_id: computerId,
+            type,
+            descriptions: description,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showMessage("success", data.message);
+          document.getElementById("addOwnTicket").reset();
+        } else {
+          showMessage("danger", data.message);
+        }
+      } catch (err) {
+        console.error("Lỗi tạo ticket:", err);
+        showMessage("danger", "Không thể gửi yêu cầu. Vui lòng thử lại.");
+      }
     });
 </script>
