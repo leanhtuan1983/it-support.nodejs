@@ -52,3 +52,20 @@ exports.setupReqTicket = async (req, res) => {
     res.status(500).json({ success: false, message: "Lỗi truy vấn database" });
   }
 };
+
+exports.getTicketInfoOfCurrentLoginUser = async (req, res) => {
+  try {
+    const user_id = req.session.user.id;
+    const results = await query(
+      `SELECT * FROM tickets WHERE owner_user_id = ?`,
+      [user_id]
+    );
+    console.log(results);
+    res.json({ success: true, data: results });
+  } catch (err) {
+    console.error("Lỗi truy vấn dữ liệu:", err);
+    res
+      .status(500)
+      .json({ success: false, message: "Lỗi kết truy vấn database" });
+  }
+};

@@ -7,6 +7,8 @@
   </div>
   <!-- Main content -->
   <div class="row mt-2 mb-2 d-flex justify-content-between">
+    <!-- Dành cho Admin/ IT -->
+    <% if (user && user.role === 'admin') { %>
     <div class="col-md-12 d-flex justify-content-between">
       <div class="col-md-3">
         <div class="card m-2 shadow">
@@ -47,41 +49,9 @@
         </div>
       </div>
     </div>
-  </div>
-
-  <!-- Modal info -->
-  <div
-    class="modal fade"
-    id="infoModal"
-    tabindex="-1"
-    aria-labelledby="infoModalLabel"
-    aria-hidden="true"
-  >
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="infoModalLabel">
-            Thông tin Computer
-          </h1>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body">...</div>
-        <div class="modal-footer">
-          <button
-            type="button"
-            class="btn btn-secondary"
-            data-bs-dismiss="modal"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
+    <% } %>
+    <!-- Dành cho user -->
+    <div class="m-2"><p id="TicketInfoOfCurrentLoginUser"></p></div>
   </div>
 
   <!-- JS DataTable -->
@@ -101,16 +71,25 @@
       const dataRepair = await resRepairTicket.json();
       const dataSetup = await resSetupTicket.json();
 
+      const resTicketInfoOfCurrentLoginUser = await fetch(
+        "/dashboard/getTicketInfoOfCurrentLoginUser"
+      );
+      const dataTicketInfoOfCurrentLoginUser =
+        await resTicketInfoOfCurrentLoginUser.json();
+
       if (
         dataTotalEq.success &&
         dataEqInUse.success &&
         dataRepair.success &&
-        dataSetup.success
+        dataSetup.success &&
+        dataTicketInfoOfCurrentLoginUser.success
       ) {
         document.getElementById("totalEq").textContent = dataTotalEq.data;
         document.getElementById("eqInUse").textContent = dataEqInUse.data;
         document.getElementById("repairReq").textContent = dataRepair.data;
         document.getElementById("setupReq").textContent = dataSetup.data;
+        document.getElementById("TicketInfoOfCurrentLoginUser").textContent =
+          "OK";
       }
     } catch (err) {
       console.error("Fetch lỗi:", err);

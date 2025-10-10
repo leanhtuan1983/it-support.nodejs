@@ -160,7 +160,7 @@
                 >
                 <textarea
                   class="form-control"
-                  id="partnet_description"
+                  id="partner_description"
                   rows="5"
                 ></textarea>
               </div>
@@ -363,7 +363,7 @@
       e.preventDefault();
       const computerId = document.getElementById("computer_id").value.trim();
       const type = document.getElementById("type").value.trim();
-      const description = document.getElementById("description").value.trim();
+      const descriptions = document.getElementById("description").value.trim();
 
       if (!computerId || !type || !description) {
         showMessage("danger", "Vui lòng điền đầy đủ thông tin!");
@@ -377,7 +377,7 @@
           body: JSON.stringify({
             computer_id: computerId,
             type,
-            descriptions: description,
+            descriptions: descriptions,
           }),
         });
 
@@ -386,6 +386,59 @@
         if (data.success) {
           showMessage("success", data.message);
           document.getElementById("addOwnTicket").reset();
+        } else {
+          showMessage("danger", data.message);
+        }
+      } catch (err) {
+        console.error("Lỗi tạo ticket:", err);
+        showMessage("danger", "Không thể gửi yêu cầu. Vui lòng thử lại.");
+      }
+    });
+
+  // Tạo ticket cho người khác
+  document
+    .getElementById("addPartnerTicket")
+    .addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const partnerComputerId = document
+        .getElementById("partner_computer_id")
+        .value.trim();
+      const partnerUserId = document
+        .getElementById("partner_user_id")
+        .value.trim();
+      const partnerType = document.getElementById("partner_type").value.trim();
+      const partnerDescription = document
+        .getElementById("partner_description")
+        .value.trim();
+
+      if (
+        !partnerComputerId ||
+        !partnerUserId ||
+        !partnerType ||
+        !partnerDescription
+      ) {
+        showMessage("danger", "Vui lòng điền đầy đủ thông tin!");
+        return;
+      }
+
+      try {
+        const res = await fetch("/tickets/addPartnerTicket", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            computer_id: partnerComputerId,
+            owner_user_id: partnerUserId,
+            type: partnerType,
+            descriptions: partnerDescription,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showMessage("success", data.message);
+          document.getElementById("addPartnerTicket").reset();
         } else {
           showMessage("danger", data.message);
         }

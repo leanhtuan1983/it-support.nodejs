@@ -16,4 +16,10 @@ router.get("/eqInUse", isLoggedIn, dashboardController.eqInUse);
 router.get("/repairReq", isLoggedIn, dashboardController.repairReqTicket);
 router.get("/setupReq", isLoggedIn, dashboardController.setupReqTicket);
 
+router.get(
+  "/getTicketInfoOfCurrentLoginUser",
+  isLoggedIn,
+  dashboardController.getTicketInfoOfCurrentLoginUser
+);
+
 module.exports = router;

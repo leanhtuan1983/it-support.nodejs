@@ -3,10 +3,17 @@ const router = express.Router();
 // const middlewares_auth = require('../middlewares/auth.js');
 const userController = require("../controllers/userController");
 
-router.get("/", userController.index);
-router.get("/fetchUserData", userController.fetchUserData);
-router.post("/addUser", userController.addUser);
-router.get("/getUser/:id", userController.fetchUserDetail);
-router.put("/update/:id", userController.updateUser);
-router.delete("/delete/:id", userController.deleteUser);
+const {
+  isLoggedIn,
+  isAdmin,
+  isITStaff,
+  isUser,
+} = require("../middlewares/authMiddleware");
+
+router.get("/", isLoggedIn, isAdmin, userController.index);
+router.get("/fetchUserData", isLoggedIn, userController.fetchUserData);
+router.post("/addUser", isLoggedIn, isAdmin, userController.addUser);
+router.get("/getUser/:id", isLoggedIn, userController.fetchUserDetail);
+router.put("/update/:id", isLoggedIn, isAdmin, userController.updateUser);
+router.delete("/delete/:id", isLoggedIn, isAdmin, userController.deleteUser);
 module.exports = router;
