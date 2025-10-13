@@ -6,9 +6,9 @@
     </ul>
   </div>
   <!-- Main content -->
-  <div class="row mt-2 mb-2 d-flex justify-content-between">
+  <div class="row mt-2 mb-2">
     <!-- Dành cho Admin/ IT -->
-    <% if (user && user.role === 'admin') { %>
+    <% if (user && (user.role === 'admin' || user.role === 'it_staff')) { %>
     <div class="col-md-12 d-flex justify-content-between">
       <div class="col-md-3">
         <div class="card m-2 shadow">
@@ -49,9 +49,41 @@
         </div>
       </div>
     </div>
+    <div class="col-md-12 d-flex justify-content-between">
+      Phân công nhiệm vụ
+    </div>
     <% } %>
     <!-- Dành cho user -->
-    <div class="m-2"><p id="TicketInfoOfCurrentLoginUser"></p></div>
+    <div class="col-md-12 m-2">
+      <div class="card">
+        <div class="card-header bg-info">Ticket history</div>
+        <div class="card-body">
+          <table id="ticketHistoryTable" class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Computer name</th>
+                <th>Description</th>
+                <th>Created at</th>
+                <th>Reported by</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="ticketHistoryTableBody"></tbody>
+            <tfoot>
+              <tr>
+                <th>#</th>
+                <th>Computer name</th>
+                <th>Description</th>
+                <th>Created at</th>
+                <th>Reported by</th>
+                <th>Status</th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- JS DataTable -->
@@ -59,43 +91,85 @@
   <script src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
   <script src="https://cdn.datatables.net/2.3.3/js/dataTables.bootstrap5.js"></script>
 </div>
+
 <script>
-  async function loadDashboardInto() {
+  function formatDate(isoString) {
+    var date = new Date(isoString);
+
+    var day = ("0" + date.getDate()).slice(-2);
+    var month = ("0" + (date.getMonth() + 1)).slice(-2);
+    var year = date.getFullYear();
+    var hours = ("0" + date.getHours()).slice(-2);
+    var minutes = ("0" + date.getMinutes()).slice(-2);
+
+    return day + "/" + month + "/" + year + " " + hours + ":" + minutes;
+  }
+  async function loadTicketHistory() {
+    try {
+      const res = await fetch("/dashboard/getTicketInfoOfCurrentLoginUser");
+      const data = await res.json();
+      if (data.success) {
+        var tbody = document.getElementById("ticketHistoryTableBody");
+        tbody.innerHTML = "";
+
+        data.data.forEach(function (ticket, index) {
+          var row = `
+            <tr>
+              <td>${index + 1}</td>
+              <td>${ticket.computer_name}</td>
+              <td>${ticket.descriptions}</td>
+              <td>${formatDate(ticket.created_at)}</td>
+              <td>${ticket.reported_by}</td>
+              <td>${ticket.status}</td>
+            </tr>`;
+          tbody.innerHTML += row;
+        });
+
+        new DataTable("#ticketHistoryTable");
+      }
+    } catch (err) {
+      console.error("Lỗi fetch dữ liệu:", err);
+    }
+  }
+
+  async function loadDashboardInfo() {
     try {
       const resTotalEq = await fetch("/dashboard/totalEq");
       const resEqInUse = await fetch("/dashboard/eqInUse");
       const resRepairTicket = await fetch("/dashboard/repairReq");
       const resSetupTicket = await fetch("/dashboard/setupReq");
+
       const dataTotalEq = await resTotalEq.json();
       const dataEqInUse = await resEqInUse.json();
       const dataRepair = await resRepairTicket.json();
       const dataSetup = await resSetupTicket.json();
 
-      const resTicketInfoOfCurrentLoginUser = await fetch(
-        "/dashboard/getTicketInfoOfCurrentLoginUser"
-      );
-      const dataTicketInfoOfCurrentLoginUser =
-        await resTicketInfoOfCurrentLoginUser.json();
+      await loadTicketHistory();
 
       if (
         dataTotalEq.success &&
         dataEqInUse.success &&
         dataRepair.success &&
-        dataSetup.success &&
-        dataTicketInfoOfCurrentLoginUser.success
+        dataSetup.success
       ) {
-        document.getElementById("totalEq").textContent = dataTotalEq.data;
-        document.getElementById("eqInUse").textContent = dataEqInUse.data;
-        document.getElementById("repairReq").textContent = dataRepair.data;
-        document.getElementById("setupReq").textContent = dataSetup.data;
-        document.getElementById("TicketInfoOfCurrentLoginUser").textContent =
-          "OK";
+        var totalEq = document.getElementById("totalEq");
+        if (totalEq) totalEq.textContent = dataTotalEq.data;
+
+        var eqInUse = document.getElementById("eqInUse");
+        if (eqInUse) eqInUse.textContent = dataEqInUse.data;
+
+        var repairReq = document.getElementById("repairReq");
+        if (repairReq) repairReq.textContent = dataRepair.data;
+
+        var setupReq = document.getElementById("setupReq");
+        if (setupReq) setupReq.textContent = dataSetup.data;
       }
     } catch (err) {
       console.error("Fetch lỗi:", err);
-      document.getElementById("totalEq").textContent = "Error";
+      var totalEq = document.getElementById("totalEq");
+      if (totalEq) totalEq.textContent = "Error";
     }
   }
 
-  loadDashboardInto();
+  loadDashboardInfo();
 </script>

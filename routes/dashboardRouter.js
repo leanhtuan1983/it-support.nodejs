@@ -8,6 +8,7 @@ const {
   isAdmin,
   isITStaff,
   isUser,
+  allowRoles,
 } = require("../middlewares/authMiddleware");
 
 router.get("/", isLoggedIn, dashboardController.index);

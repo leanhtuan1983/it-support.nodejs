@@ -10,6 +10,7 @@ const userRouter = require("./routes/userRouter");
 const departmentRouter = require("./routes/departmentRouter");
 const computerRouter = require("./routes/computerRouter");
 const ticketRouter = require("./routes/ticketRouter");
+const repairRouter = require("./routes/repairRouter");
 
 const app = express();
 
@@ -48,5 +49,6 @@ app.use("/users", userRouter);
 app.use("/departments", departmentRouter);
 app.use("/computers", computerRouter);
 app.use("/tickets", ticketRouter);
+app.use("/repairs", repairRouter);
 
 module.exports = app;

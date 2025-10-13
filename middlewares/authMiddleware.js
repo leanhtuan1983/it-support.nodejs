@@ -25,3 +25,19 @@ exports.isUser = (req, res, next) => {
   }
   return res.status(403).send("Bạn không có quyền truy cập (user only)");
 };
+
+exports.allowRoles = function (roles = []) {
+  return function (req, res, next) {
+    if (!req.session.user) {
+      return res.redirect("/login");
+    }
+
+    const userRole = req.session.user.role;
+
+    if (roles.includes(userRole)) {
+      return next();
+    }
+
+    return res.status(403).send("Access denied");
+  };
+};

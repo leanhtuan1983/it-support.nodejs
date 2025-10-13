@@ -57,10 +57,12 @@ exports.getTicketInfoOfCurrentLoginUser = async (req, res) => {
   try {
     const user_id = req.session.user.id;
     const results = await query(
-      `SELECT * FROM tickets WHERE owner_user_id = ?`,
+      `SELECT c.name AS computer_name, t.descriptions,  u.name AS reported_by, t.created_at, t.status 
+      FROM tickets t INNER JOIN computers c ON t.computer_id = c.id 
+      INNER JOIN users u ON t.reported_by_user_id = u.id WHERE t.owner_user_id = ?`,
       [user_id]
     );
-    console.log(results);
+    // console.log(results);
     res.json({ success: true, data: results });
   } catch (err) {
     console.error("Lỗi truy vấn dữ liệu:", err);
