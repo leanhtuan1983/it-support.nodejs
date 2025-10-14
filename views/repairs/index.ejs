@@ -6,10 +6,78 @@
     </ul>
   </div>
   <!-- Main content -->
-  <div class="row mt-2 mb-2 d-flex justify-content-between"></div>
+  <div class="row mt-2 mb-2 d-flex justify-content-between">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header bg-info">Repair List</div>
+        <div class="card-body">
+          <table id="repairListTable" class="table table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Ticket ID</th>
+                <th>Computer name</th>
+                <th>Owner</th>
+                <th>Descriptions</th>
+                <th>Created at</th>
+                <th>Causes</th>
+                <th>Solutions</th>
+                <th>Repaired by</th>
+                <th>Repaired at</th>
+              </tr>
+            </thead>
+            <tbody id="repairListTableBody"></tbody>
+            <tfoot>
+              <tr>
+                <th>#</th>
+                <th>Ticket ID</th>
+                <th>Computer name</th>
+                <th>Owner</th>
+                <th>Descriptions</th>
+                <th>Created at</th>
+                <th>Causes</th>
+                <th>Solutions</th>
+                <th>Repaired by</th>
+                <th>Repaired at</th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- JS DataTable -->
   <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
   <script src="https://cdn.datatables.net/2.3.3/js/dataTables.js"></script>
   <script src="https://cdn.datatables.net/2.3.3/js/dataTables.bootstrap5.js"></script>
 </div>
+<script>
+  async function loadRepairList() {
+    try {
+      const res = await fetch("/repairs/getRepairList");
+      const data = await res.json();
+      const tbody = document.getElementById("repairListTableBody");
+      tbody.innerHTML = "";
+      data.data.forEach((rep, index) => {
+        const row = `<tr>
+          <td>${index + 1}</td>
+          <td>${rep.ticket_id}</td>
+          <td>${rep.computer_name}</td>
+          <td>${rep.owner_user}</td>
+          <td>${rep.descriptions}</td>
+          <td>${rep.created_at}</td>
+          <td>${rep.causes}</td>
+          <td>${rep.solutions}</td>
+          <td>${rep.repaired_by}</td>
+          <td>${rep.repaired_at}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+      new DataTable("#repairListTable");
+    } catch (err) {
+      console.error("Lỗi fetch:", err);
+    }
+  }
+  window.onload = loadRepairList;
+</script>

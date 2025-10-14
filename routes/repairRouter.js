@@ -11,11 +11,13 @@ const {
   allowRoles,
 } = require("../middlewares/authMiddleware");
 
+router.get("/", isLoggedIn, isAdmin, repairController.index);
+
 router.get(
-  "/",
+  "/getRepairList",
   isLoggedIn,
-  allowRoles(["admin", "it_staff"]),
-  repairController.index
+  isAdmin,
+  repairController.fetchRepairList
 );
 
 module.exports = router;

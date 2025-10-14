@@ -1,5 +1,5 @@
 const { query } = require("../helpers/dbHelper");
-
+// Hiển thị trang index
 exports.index = (req, res) => {
   res.render("dashboard/index", {
     title: "Dashboard",
@@ -7,6 +7,7 @@ exports.index = (req, res) => {
   });
 };
 
+// Tổng số thiết bị
 exports.totalEq = async (req, res) => {
   try {
     const totalEq = await query("SELECT COUNT(id) AS total FROM computers");
@@ -17,6 +18,7 @@ exports.totalEq = async (req, res) => {
   }
 };
 
+// Số lượng thiết bị đang sử dụng
 exports.eqInUse = async (req, res) => {
   try {
     const eqInUse = await query(
@@ -29,6 +31,7 @@ exports.eqInUse = async (req, res) => {
   }
 };
 
+// Số lượng ticket y/c sửa chữa
 exports.repairReqTicket = async (req, res) => {
   try {
     const repairReq = await query(
@@ -41,6 +44,7 @@ exports.repairReqTicket = async (req, res) => {
   }
 };
 
+// Số lượng ticket y/c cài đặt
 exports.setupReqTicket = async (req, res) => {
   try {
     const setupReq = await query(
@@ -53,6 +57,7 @@ exports.setupReqTicket = async (req, res) => {
   }
 };
 
+// Danh sách ticket của người đang đăng nhập
 exports.getTicketInfoOfCurrentLoginUser = async (req, res) => {
   try {
     const user_id = req.session.user.id;
@@ -71,3 +76,4 @@ exports.getTicketInfoOfCurrentLoginUser = async (req, res) => {
       .json({ success: false, message: "Lỗi kết truy vấn database" });
   }
 };
+
