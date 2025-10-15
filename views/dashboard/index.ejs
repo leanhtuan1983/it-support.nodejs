@@ -49,40 +49,42 @@
         </div>
       </div>
     </div>
-    <% } %>
+   
   </div>
-<div class="row mt-2 mb-2 d-flex justify-content-between">
-    <div class="col-md-6">
-      <div class="card ms-2">
+  <div class="row mt-2 mb-2 d-flex justify-content-between">
+    <div class="col-md-8">
+      <div class="card ms-2 me-1">
         <div class="card-header bg-secondary-subtle">Newest tickets</div>
         <div class="card-body">
-          <table id="" class="table table-striped">
+          <table id="newestTicketTable" class="table table-striped">
             <thead>
               <tr>
                 <th>#</th>
                 <th>Computer name</th>
+                <th>Owner</th>
+                <th>Type</th>
                 <th>Description</th>
                 <th>Created at</th>
-                <th>Reported by</th>
-                <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
-            <tbody id=""></tbody>
+            <tbody id="newestTicketTableBody"></tbody>
             <tfoot>
               <tr>
                 <th>#</th>
                 <th>Computer name</th>
+                <th>Owner</th>
+                <th>Type</th>
                 <th>Description</th>
                 <th>Created at</th>
-                <th>Reported by</th>
-                <th>Status</th>
+                <th>Action</th>
               </tr>
             </tfoot>
           </table>
         </div>
       </div>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-4">
       <div class="card me-2">
         <div class="card-header bg-warning-subtle">My task</div>
         <div class="card-body">
@@ -91,10 +93,8 @@
               <tr>
                 <th>#</th>
                 <th>Computer name</th>
-                <th>Description</th>
-                <th>Created at</th>
-                <th>Reported by</th>
                 <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody id=""></tbody>
@@ -102,10 +102,8 @@
               <tr>
                 <th>#</th>
                 <th>Computer name</th>
-                <th>Description</th>
-                <th>Created at</th>
-                <th>Reported by</th>
                 <th>Status</th>
+                <th>Action</th>
               </tr>
             </tfoot>
           </table>
@@ -113,9 +111,9 @@
       </div>
     </div>
  
-</div>
-    <!-- Assignment/Task -->
-<div class="row mt-2 mb-2">
+  </div>
+   <% } %>
+  <div class="row mt-2 mb-2">
     <!-- Dành cho user -->
     <div class="col-md-12 m-2">
       <div class="card">
@@ -147,7 +145,7 @@
         </div>
       </div>
     </div>
-</div>
+  </div>
 
   </div>
 
@@ -158,9 +156,9 @@
 </div>
 
 <script>
+  // Định dạng thời gian
   function formatDate(isoString) {
     var date = new Date(isoString);
-
     var day = ("0" + date.getDate()).slice(-2);
     var month = ("0" + (date.getMonth() + 1)).slice(-2);
     var year = date.getFullYear();
@@ -169,6 +167,8 @@
 
     return day + "/" + month + "/" + year + " " + hours + ":" + minutes;
   }
+
+  // Lấy danh sách ticket của người đăng nhập (cho tất cả các user)
   async function loadTicketHistory() {
     try {
       const res = await fetch("/dashboard/getTicketInfoOfCurrentLoginUser");
@@ -177,7 +177,7 @@
         var tbody = document.getElementById("ticketHistoryTableBody");
         tbody.innerHTML = "";
 
-        data.data.forEach(function (ticket, index) {
+        data.data.forEach((ticket, index) => {
           var row = `
             <tr>
               <td>${index + 1}</td>
@@ -197,6 +197,37 @@
     }
   }
 
+  // Lấy danh sách các ticket mới nhất (dành cho Admin, IT)
+  async function loadNewestTicket() {
+try {
+  const res = await fetch("/tickets/getNewestTicket");
+  const data = await res.json();
+  var tbody = document.getElementById("newestTicketTableBody");
+  tbody.innerHTML = "";
+  data.data.forEach((newTicket, index) => {
+    const statusMap = {
+      0: `<button class="btn btn-sm btn-outline-info" onclick="assignTicket(${newTicket.id})">Claim</button>`,
+      1: `<span class="text-warning">Assigned by other</span>`,
+      2: `<span class="text-success">Fixed</span>`,
+      };
+          var row = `
+            <tr>
+              <td>${index + 1}</td>
+              <td>${newTicket.computer_name}</td>
+              <td>${newTicket.owner_name}</td>
+              <td>${newTicket.type === 1? `Sửa chữa`: "Cài đặt"}</td>
+              <td>${newTicket.descriptions}</td>
+              <td>${formatDate(newTicket.created_at)}</td>
+              <td>${statusMap[newTicket.status] || "Unknown"}</td>
+            </tr>`;
+          tbody.innerHTML += row;
+  });
+} catch(err) {
+   console.error("Lỗi fetch dữ liệu:", err);
+}
+  }
+
+  // Hiển thi các thông tin lên Dashboard
   async function loadDashboardInfo() {
     try {
       const resTotalEq = await fetch("/dashboard/totalEq");
@@ -210,6 +241,7 @@
       const dataSetup = await resSetupTicket.json();
 
       await loadTicketHistory();
+      await loadNewestTicket();
 
       if (
         dataTotalEq.success &&
@@ -234,6 +266,22 @@
       var totalEq = document.getElementById("totalEq");
       if (totalEq) totalEq.textContent = "Error";
     }
+  }
+  async function assignTicket(id) {
+  try {
+    const res = await fetch(`/repairs/assignedByITStaff/${id}`, {
+      method: "POST",
+    });
+    const data = await res.json();
+    if (data.success) {
+      showMessage("success", data.message);
+      loadTicketList(); // reload lại bảng
+    } else {
+      showMessage("danger", data.message);
+    }
+  } catch (err) {
+    console.error("Lỗi khi assign ticket:", err)
+  }
   }
 
   loadDashboardInfo();

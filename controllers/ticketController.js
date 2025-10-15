@@ -88,3 +88,17 @@ exports.addPartnerTicket = async (req, res) => {
     res.status(500).json({ success: false, message: "Gửi yêu cầu thất bại" });
   }
 };
+
+exports.getNewestTicket = async (req, res) => {
+  try {
+    const results = await query(
+      `SELECT c.name AS computer_name, u.name AS owner_name, t.type, t.descriptions, t.created_at, t.status 
+         FROM tickets t INNER JOIN computers c ON t.computer_id = c.id
+         INNER JOIN users u ON t.owner_user_id = u.id`
+    );
+    res.json({ success: true, data: results });
+  } catch (err) {
+    console.error("Có lỗi khi tải danh sách:", err);
+    res.status(500).json({ success: false, message: "Tải danh sách thất bại" });
+  }
+};
