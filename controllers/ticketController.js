@@ -92,7 +92,7 @@ exports.addPartnerTicket = async (req, res) => {
 exports.getNewestTicket = async (req, res) => {
   try {
     const results = await query(
-      `SELECT c.name AS computer_name, u.name AS owner_name, t.type, t.descriptions, t.created_at, t.status 
+      `SELECT t.id AS ticket_id, c.name AS computer_name, u.name AS owner_name, t.type, t.descriptions, t.created_at, t.status 
          FROM tickets t INNER JOIN computers c ON t.computer_id = c.id
          INNER JOIN users u ON t.owner_user_id = u.id`
     );

@@ -25,6 +25,13 @@ router.get(
   repairController.fetchRepairList
 );
 
+router.get(
+  "/getAssignedTicketOfCurrentLoggedInITStaff",
+  isLoggedIn,
+  allowRoles(["admin", "it_staff"]),
+  repairController.getAssignedTicketOfCurrentLoggedInITStaff
+);
+
 router.post(
   "/assignedByITStaff/:id",
   isLoggedIn,

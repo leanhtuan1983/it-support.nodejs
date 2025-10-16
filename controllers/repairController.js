@@ -18,7 +18,21 @@ exports.fetchRepairList = async (req, res) => {
 };
 
 // Lấy danh sách ticket đăng ký của it_staff đăng nhập
-exports.getClaimTicketOfCurrentLoggedInITStaff = async (req, res) => {};
+exports.getAssignedTicketOfCurrentLoggedInITStaff = async (req, res) => {
+  try {
+    const id = req.session.user.id;
+    const results = await query(
+      `SELECT r.id AS repair_id, t.id AS ticket_id, c.name AS computer_name, t.type 
+      FROM repairs r INNER JOIN tickets t ON r.ticket_id = t.id
+      INNER JOIN computers c ON t.computer_id = c.id WHERE r.user_id = ?`,
+      [id]
+    );
+    res.json({ success: true, data: results });
+  } catch (err) {
+    console.error("Lỗi fetch dữ liệu:", err);
+    res.json({ success: false, message: "Lỗi kết nối server" });
+  }
+};
 
 // Admin phân công người xử lý
 exports.assignedByAdmin = async (req, res) => {};

@@ -53,6 +53,7 @@
   </div>
   <div class="row mt-2 mb-2 d-flex justify-content-between">
     <div class="col-md-8">
+      <div id="msg"></div>
       <div class="card ms-2 me-1">
         <div class="card-header bg-secondary-subtle">Newest tickets</div>
         <div class="card-body">
@@ -86,23 +87,23 @@
     </div>
     <div class="col-md-4">
       <div class="card me-2">
-        <div class="card-header bg-warning-subtle">My task</div>
+        <div class="card-header bg-info-subtle">My task</div>
         <div class="card-body">
-          <table id="" class="table table-striped">
+          <table id="myTaskTable" class="table table-striped">
             <thead>
               <tr>
                 <th>#</th>
                 <th>Computer name</th>
-                <th>Status</th>
+                <th>Type</th>
                 <th>Action</th>
               </tr>
             </thead>
-            <tbody id=""></tbody>
+            <tbody id="myTaskTableBody"></tbody>
             <tfoot>
               <tr>
                 <th>#</th>
                 <th>Computer name</th>
-                <th>Status</th>
+                <th>Type</th>
                 <th>Action</th>
               </tr>
             </tfoot>
@@ -168,6 +169,27 @@
     return day + "/" + month + "/" + year + " " + hours + ":" + minutes;
   }
 
+    // Hiển thị message chung
+  function showMessage(type, text) {
+    const msgDiv = document.getElementById("msg");
+
+    // gán nội dung
+    msgDiv.innerHTML = `<div class="alert alert-${type}">${text}</div>`;
+
+    // hiện ra với hiệu ứng fade-in
+    msgDiv.classList.add("show");
+
+    // sau 3s thì fade-out
+    setTimeout(() => {
+      msgDiv.classList.remove("show");
+
+      // đợi hết transition rồi mới xóa nội dung
+      setTimeout(() => {
+        msgDiv.innerHTML = "";
+      }, 500); // khớp với transition 0.5s
+    }, 3000);
+  }
+
   // Lấy danh sách ticket của người đăng nhập (cho tất cả các user)
   async function loadTicketHistory() {
     try {
@@ -206,8 +228,8 @@ try {
   tbody.innerHTML = "";
   data.data.forEach((newTicket, index) => {
     const statusMap = {
-      0: `<button class="btn btn-sm btn-outline-info" onclick="assignTicket(${newTicket.id})">Claim</button>`,
-      1: `<span class="text-warning">Assigned by other</span>`,
+      0: `<button class="btn btn-sm btn-outline-info" onclick="assignTicket(${newTicket.ticket_id})">Claim</button>`,
+      1: `<span class="text-warning">Assigned</span>`,
       2: `<span class="text-success">Fixed</span>`,
       };
           var row = `
@@ -222,10 +244,40 @@ try {
             </tr>`;
           tbody.innerHTML += row;
   });
+  new DataTable("#newestTicketTable");
 } catch(err) {
    console.error("Lỗi fetch dữ liệu:", err);
 }
   }
+
+  // Hiển thị My Task
+  async function myTask() {
+    try {
+      const res = await fetch("/repairs/getAssignedTicketOfCurrentLoggedInITStaff");
+      const data = await res.json();
+      if (data.success) {
+        var tbody = document.getElementById("myTaskTableBody");
+        tbody.innerHTML = "";
+
+        data.data.forEach((task, index) => {
+          var row = `
+            <tr>
+              <td>${index + 1}</td>
+              <td>${task.computer_name}</td>
+              <td>${task.type === 1? `Sửa chữa`: "Cài đặt"}</td>
+              <td></td>
+            </tr>`;
+          tbody.innerHTML += row;
+        });
+
+        new DataTable("#myTaskTable");
+      }
+    } catch (err) {
+      console.error("Lỗi fetch dữ liệu:", err);
+    }
+    } 
+
+  
 
   // Hiển thi các thông tin lên Dashboard
   async function loadDashboardInfo() {
@@ -242,6 +294,7 @@ try {
 
       await loadTicketHistory();
       await loadNewestTicket();
+      await myTask();
 
       if (
         dataTotalEq.success &&
@@ -275,7 +328,8 @@ try {
     const data = await res.json();
     if (data.success) {
       showMessage("success", data.message);
-      loadTicketList(); // reload lại bảng
+      loadNewestTicket(); // reload lại bảng Ticket
+      myTask(); //reload lại bảng My Task
     } else {
       showMessage("danger", data.message);
     }
