@@ -265,7 +265,10 @@ try {
               <td>${index + 1}</td>
               <td>${task.computer_name}</td>
               <td>${task.type === 1? `Sửa chữa`: "Cài đặt"}</td>
-              <td></td>
+              <td>
+                <button class ="btn btn-outline-success btn-sm"><i class="bi bi-eye"></i></button>
+                <button class ="btn btn-outline-danger btn-sm"><i class="bi bi-x-circle"></i></button>
+              </td>
             </tr>`;
           tbody.innerHTML += row;
         });
@@ -328,6 +331,7 @@ try {
     const data = await res.json();
     if (data.success) {
       showMessage("success", data.message);
+      loadDashboardInfo();
       loadNewestTicket(); // reload lại bảng Ticket
       myTask(); //reload lại bảng My Task
     } else {

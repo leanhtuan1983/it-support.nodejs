@@ -94,7 +94,7 @@ exports.getNewestTicket = async (req, res) => {
     const results = await query(
       `SELECT t.id AS ticket_id, c.name AS computer_name, u.name AS owner_name, t.type, t.descriptions, t.created_at, t.status 
          FROM tickets t INNER JOIN computers c ON t.computer_id = c.id
-         INNER JOIN users u ON t.owner_user_id = u.id`
+         INNER JOIN users u ON t.owner_user_id = u.id ORDER BY t.created_at DESC`
     );
     res.json({ success: true, data: results });
   } catch (err) {

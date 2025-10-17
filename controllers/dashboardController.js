@@ -35,7 +35,7 @@ exports.eqInUse = async (req, res) => {
 exports.repairReqTicket = async (req, res) => {
   try {
     const repairReq = await query(
-      "SELECT COUNT(id) AS repair_req FROM tickets WHERE type = 1"
+      "SELECT COUNT(id) AS repair_req FROM tickets WHERE type = 1 AND status =0"
     );
     res.json({ success: true, data: repairReq[0].repair_req });
   } catch (err) {
@@ -48,7 +48,7 @@ exports.repairReqTicket = async (req, res) => {
 exports.setupReqTicket = async (req, res) => {
   try {
     const setupReq = await query(
-      "SELECT COUNT(id) AS setup_req FROM tickets WHERE type = 2"
+      "SELECT COUNT(id) AS setup_req FROM tickets WHERE type = 2 AND status =0"
     );
     res.json({ success: true, data: setupReq[0].setup_req });
   } catch (err) {
@@ -76,4 +76,3 @@ exports.getTicketInfoOfCurrentLoginUser = async (req, res) => {
       .json({ success: false, message: "Lỗi kết truy vấn database" });
   }
 };
-
