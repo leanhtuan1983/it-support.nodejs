@@ -51,7 +51,6 @@ exports.assignedByItStaff = async (req, res) => {
         message: "Không tìm thấy ticket trên hệ thống",
       });
     }
-    console.log(id);
     // Kiểm tra đã có ai nhận chưa
     const [exist] = await query("SELECT * FROM repairs WHERE ticket_id = ?", [
       id,
@@ -82,6 +81,36 @@ exports.assignedByItStaff = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Có lỗi xảy ra khi đăng ký công việc",
+    });
+  }
+};
+
+// Cập nhật trạng thái hoàn thành Ticket (dành cho IT)
+exports.updateTask = async (req, res) => {
+  try {
+    const { id, causes, solutions } = req.body;
+    const it_staff_id = req.session.user.id;
+    // Kiểm tra tồn tại ticket trong bảng repairs
+    const [ticket] = await query("SELECT * FROM repairs WHERE id = ?", [id]);
+    if (!ticket) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy ticket trên hệ thống",
+      });
+    }
+    // Cập nhật nguyên nhân và cách xử lý của ticket trong bảng repairs
+    await query(
+      "UPDATE repairs SET (causes, solutions, repaired_at) = (?,?, NOW()) WHERE id = ?",
+      [causes, solutions, id]
+    );
+    // Cập nhật trạng thái của ticket trong bảng tickets
+    await query("UPDATE tickets SET status = 2 WHERE id = ?", [id.ticket_id]);
+    res.json({ success: true, message: "Cập nhật thành công" });
+  } catch (err) {
+    console.error("Lỗi cập nhật:", err);
+    res.status(500).json({
+      success: false,
+      message: "Có lỗi xảy ra khi cập nhật thông tin",
     });
   }
 };
