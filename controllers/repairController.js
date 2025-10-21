@@ -85,6 +85,14 @@ exports.assignedByItStaff = async (req, res) => {
   }
 };
 
+// Lấy 1 ticket được chọn trong danh sách repairs của IT
+exports.getTicketInfo = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const row = await query("SELECT * FROM repairs WHERE id = ?", [id]);
+  } catch {}
+};
+
 // Cập nhật trạng thái hoàn thành Ticket (dành cho IT)
 exports.updateTask = async (req, res) => {
   try {

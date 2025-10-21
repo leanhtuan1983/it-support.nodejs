@@ -38,4 +38,18 @@ router.post(
   allowRoles(["admin", "it_staff"]),
   repairController.assignedByItStaff
 );
+
+router.put(
+  "/updateTask/:id",
+  isLoggedIn,
+  allowRoles(["admin", "it_staff"]),
+  repairController.updateTask
+);
+
+router.get(
+  "/getTicketInfo/:id",
+  isLoggedIn,
+  allowRoles(["admin", "it_staff"]),
+  repairController.getTicketInfo
+);
 module.exports = router;

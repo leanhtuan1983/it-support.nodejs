@@ -15,8 +15,11 @@
           <div class="card-header">
             <h5 class="text-center">Tổng số lượng thiết bị</h5>
           </div>
-          <div class="card-body bg-primary">
+          <div class="card-body bg-primary-subtle">
             <h1 id="totalEq" class="text-center">0</h1>
+          </div>
+          <div class="card-footer">
+            <p class="text-center">Unit: PCS</p>
           </div>
         </div>
       </div>
@@ -25,16 +28,22 @@
           <div class="card-header">
             <h5 class="text-center">Đang sử dụng</h5>
           </div>
-          <div class="card-body bg-info">
+          <div class="card-body bg-info-subtle">
             <h1 id="eqInUse" class="text-center">0</h1>
+          </div>
+          <div class="card-footer">
+            <p class="text-center">Unit: PCS</p>
           </div>
         </div>
       </div>
       <div class="col-md-3">
         <div class="card m-2 shadow">
           <div class="card-header"><h5 class="text-center">Báo lỗi</h5></div>
-          <div class="card-body bg-danger">
+          <div class="card-body bg-danger-subtle">
             <h1 id="repairReq" class="text-center">0</h1>
+          </div>
+          <div class="card-footer">
+            <p class="text-center">Unit: Ticket(s)</p>
           </div>
         </div>
       </div>
@@ -43,8 +52,11 @@
           <div class="card-header">
             <h5 class="text-center">Hỗ trợ cài đặt</h5>
           </div>
-          <div class="card-body bg-warning">
+          <div class="card-body bg-warning-subtle">
             <h1 id="setupReq" class="text-center">0</h1>
+          </div>
+          <div class="card-footer">
+            <p class="text-center">Unit: Ticket(s)</p>
           </div>
         </div>
       </div>
@@ -266,7 +278,7 @@ try {
               <td>${task.computer_name}</td>
               <td>${task.type === 1? `Sửa chữa`: "Cài đặt"}</td>
               <td>
-                <button class ="btn btn-outline-success btn-sm"><i class="bi bi-eye"></i></button>
+                <button class ="btn btn-outline-success btn-sm" onclick = onclick="updateTask(${task.id})><i class="bi bi-eye"></i></button>
                 <button class ="btn btn-outline-danger btn-sm"><i class="bi bi-x-circle"></i></button>
               </td>
             </tr>`;
@@ -340,6 +352,14 @@ try {
   } catch (err) {
     console.error("Lỗi khi assign ticket:", err)
   }
+  }
+
+  async function updateTask(id) {
+    try {
+
+    } catch {
+
+    }
   }
 
   loadDashboardInfo();
